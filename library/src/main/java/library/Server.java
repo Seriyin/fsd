@@ -1,4 +1,4 @@
-package fsd.Library;
+package library;
 
 /**
  * Server class contains the main logic to boot up a process in a connected

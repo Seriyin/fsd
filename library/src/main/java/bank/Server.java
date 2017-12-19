@@ -1,4 +1,4 @@
-package fsd.Bank;
+package bank;
 
 
 /**
