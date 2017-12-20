@@ -10,17 +10,17 @@ public interface Cart {
 
     /**
      * Adds a book to the cart.
-     * @param bookID ID of the book to add.
+     * @param isbn ISBN of the book to add.
      * @return Error code.
      */
-    int addBook(int bookID);
+    int addBook(int isbn);
 
     /**
      * Removes a book from the cart.
-     * @param bookID ID of the book to remove.
+     * @param isbn ISBN of the book to remove.
      * @return Error code.
      */
-    int removeBook(int bookID);
+    int removeBook(int isbn);
 
     /**
      * Finalizes shopping by buying all books in the cart.
