@@ -7,9 +7,9 @@ import java.util.Objects;
  *
  * @author André Diogo
  * @author Diogo Pimenta
- * @version 1.0, 20-12-2017
+ * @version 1.1, 20-12-2017
  */
-public class Item {
+public final class Item {
     private String item;
     private double charge;
 

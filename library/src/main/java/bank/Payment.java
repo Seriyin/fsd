@@ -8,9 +8,9 @@ import java.util.Objects;
  *
  * @author André Diogo
  * @author Diogo Pimenta
- * @version 1.0, 20-12-2017
+ * @version 1.1, 20-12-2017
  */
-public class Payment {
+public final class Payment {
     private List<Item> items;
     private double charge;
 
