@@ -13,9 +13,9 @@ import java.util.Objects;
  * unique numeric tag and the object's classname.
  * @author Andre Diogo
  * @author Diogo Pimenta
- * @version 1.0
+ * @version 1.1
  */
-public class RemoteObj implements CatalystSerializable {
+public final class RemoteObj implements CatalystSerializable {
     private Address address;
     private long id;
     private String cls;
@@ -84,18 +84,18 @@ public class RemoteObj implements CatalystSerializable {
     }
 
     /**
-     * Equals that checks subclass.
+     * Equals that does not check for subclass.
      * @param o Object to compare to.
      * @return boolean with comparison value.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RemoteObj)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         RemoteObj remoteObj = (RemoteObj) o;
-        return id == remoteObj.id &&
-                Objects.equals(address, remoteObj.address) &&
-                Objects.equals(cls, remoteObj.cls);
+        return getId() == remoteObj.getId() &&
+                Objects.equals(getAddress(), remoteObj.getAddress()) &&
+                Objects.equals(getCls(), remoteObj.getCls());
     }
 
     /**
@@ -106,4 +106,6 @@ public class RemoteObj implements CatalystSerializable {
     public int hashCode() {
         return Objects.hash(address, id, cls);
     }
+
+
 }
