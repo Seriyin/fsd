@@ -8,7 +8,7 @@ import java.util.*;
  * Can be bootstrapped as its separate process using the Clique.
  * @author Andre Diogo
  * @author Diogo Pimenta
- * @version 1.1
+ * @version 1.2
  * @see RemoteObj
  * @see pt.haslab.ekit.Clique
  * @see ObjectStore
@@ -37,14 +37,14 @@ public class ObjectStoreSkeleton implements ObjectStore {
      * @param ro The RemoteObj reference to store (will not be cloned).
      * @return whether the element already existed in the store.
      */
-    public boolean insertObject(RemoteObj ro) {
-        if(store.containsKey(ro.getCls())) {
-            Set<RemoteObj> objstr = store.get(ro.getCls());
+    public boolean insertObject(String name, RemoteObj ro) {
+        if(store.containsKey(name)) {
+            Set<RemoteObj> objstr = store.get(name);
             return objstr.add(ro);
         }
         else {
-            store.put(ro.getCls(), new HashSet<>());
-            return store.get(ro.getCls()).add(ro);
+            store.put(name, new HashSet<>());
+            return store.get(name).add(ro);
         }
     }
 
