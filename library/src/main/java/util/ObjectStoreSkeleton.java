@@ -8,13 +8,14 @@ import java.util.*;
  * Can be bootstrapped as its separate process using the Clique.
  * @author Andre Diogo
  * @author Diogo Pimenta
- * @version 1.0
+ * @version 1.1
  * @see RemoteObj
  * @see pt.haslab.ekit.Clique
  * @see ObjectStore
  */
 public class ObjectStoreSkeleton implements ObjectStore {
     private Map<String,Set<RemoteObj>> store;
+    private RemoteObj ref;
 
     /**
      * Constructs an ObjectStore instance.
@@ -27,7 +28,7 @@ public class ObjectStoreSkeleton implements ObjectStore {
      * Starts up a dedicated ObjectStore in its own process.
      * @param args Not used currently.
      */
-    public void main(String args[]) {
+    public static void main(String args[]) {
         ObjectStore objstr = new ObjectStoreSkeleton();
     }
 
