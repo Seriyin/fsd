@@ -17,12 +17,9 @@
 
 \newcommand{\inlinecode}{\texttt}
 
-\begin{document}
-\begin{titlepage}
 
-\title{Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribuídas e distribuição transparente\\MIEI}
-
-\includegraphics[width=2cm]{logo-ee.png}
+\title{\includegraphics[width=2cm]{logo-ee.png}\\
+Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribuídas e distribuição transparente\\MIEI}
 
 \author{
   André Diogo\\
@@ -36,10 +33,11 @@
 
 \date{\today}
 
+\begin{document}
+
+\maketitle
+
 \newpage
-
-
-\end{titlepage}
 
 \tableofcontents
 
@@ -57,10 +55,16 @@
 %    \centering
 %    \includegraphics[width=\textwidth]{kali_int_net.png}
 %    \includegraphics[width=\textwidth]{kali_net.png}
-%    \caption{Kali's internal network configuration.}
-%    \label{fig:kali}
 %\end{figure}
+\newpage
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.80,page=1]{Process_Architecture.pdf}
+  \caption{Arquitectura dos processos.}
+  \label{fig:procarq}
+\end{figure}
+\newpage
 
 \paragraph{}Como mostra a figura, o nosso sistema está dependente de um processo que atua como serviço de nomes e gestor de transações conhecido por todos os outros processos.
 
@@ -77,9 +81,9 @@
 \section{Modularidade e classes auxiliares}
 
 \paragraph{} Para permitir uma implementação bastante modular e genérica do código envolvido na manutenção de objetos distribuídos e conexão de rede criaram-se classes auxiliares dedicadas à gestão de referências distribuídas (DistObjManager), encapsuladora de funções comuns de \texitt{leasing} de objetos e \texitt{garbage collection}, assim como importação de \texitt{Stubs
-} e exportação de \textitt{Servants} (usou-se o termo Skeleton para estes na base de código); e de gestão de conexões (Server e Stub), encapsuladoras de funções comuns de gestão ligações, registo de \texitt{handlers} e registo de \texitt{callbacks}.
+} e exportação de \textitt{Servants} (usou-se o termo Skeleton para estes na base de código); e de gestão de conexões (Server e Stub), encapsuladoras de funções comuns de gestão de ligações, registo de \texitt{handlers} e registo de \texitt{callbacks}.
 
-\paragraph{} Estas classes abstratas tentam deferir os detalhes mais específicos (classes concretas envolvidas) para implementações mais concretas. Tentam ser o mais \texitt{Plug 'n Play} possível, seguindo uma abordagem de inversão de controlo.
+\paragraph{} Estas classes abstratas tentam deferir os detalhes mais específicos (classes concretas envolvidas) para implementações mais concretas ligadas à lógica de negócio dedicada às livrarias e bancos. Tentam ser o mais \texitt{Plug 'n Play} possível, seguindo uma abordagem de inversão de controlo.
 
 \end{document}
 
