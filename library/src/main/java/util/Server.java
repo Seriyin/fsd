@@ -21,6 +21,7 @@ public abstract class Server {
 
 
     /**
+     * TODO# Implement port attribution dirty harry style. Open and close 'till one works.
      * Handles server setup. Network connections and thread context startup.
      * Assumes only it and an object store exist on the network and updates from there.
      */
