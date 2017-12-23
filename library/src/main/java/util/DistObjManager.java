@@ -1,11 +1,11 @@
 package util;
 
 import io.atomix.catalyst.transport.Address;
-import pt.haslab.ekit.Clique;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,33 +14,33 @@ import java.util.Optional;
  * leases on remote objects. This class is in charge of this.
  * Imports and Exports RemoteObjects via a RemoteObjFactory.
  * <p>
- * Right now it assumes a Clique and an Address which is unfeasible.
- * Either Clique + Index or Address + Connection.
+ * Right now it assumes a Address + Known Addresses.
  * @see RemoteObjFactory
  * @author André Diogo
  * @author Diogo Pimenta
- * @version 1.0, 21-12-2017
+ * @version 1.1, 22-12-2017
  */
 public final class DistObjManager {
     private RemoteObjFactory rof;
     private Map<String, Map<Long, Object>> objstr;
-    private Clique cl;
+    private List<Address> known;
     private Address own;
 
     /**
-     * TODO# Probly change this to include indexes instead of addresses
-     * TODO# Or not use clique at all for dynamic networking.
+     * Not using clique at all for dynamic networking.
+     * <p>
      * Simple parameterized constructor receives
-     * the Clique the DistObjManager is located in
+     * the Addresses that are known to the DistObjManager current process
      * and the actual Address of the process it's in.
-     * @param cl Clique in which the process is located.
-     * @param own The process's external address.
+     * <p>
+     * We assume each process -> one server or client.
+     * @param known List of known addresses.
+     * @param me The process's own address.
      */
-    public DistObjManager(Clique cl, Address own) {
-        this.cl = cl;
+    public DistObjManager(List<Address> known, Address me) {
         this.own = own;
         objstr = new HashMap<>();
-        rof = new RemoteObjFactory(cl, own, objstr);
+        rof = new RemoteObjFactory(own, objstr);
     }
 
 
@@ -75,7 +75,7 @@ public final class DistObjManager {
     /**
      * Returns a clone of a skeleton pointed to by a RemoteObj.
      * <p>
-     * Has to be done via reflection.
+     * Has to be done via reflection. (or manual monomorphization).
      * <p>
      * Excepts out the wazoo.
      * @param b the reference to be looked-up.
