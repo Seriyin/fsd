@@ -1,0 +1,15 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Introdu\IeC {\c c}\IeC {\~a}o}{2}{chapter.1}
+\contentsline {paragraph}{}{2}{section*.2}
+\contentsline {paragraph}{}{2}{section*.3}
+\contentsline {chapter}{\numberline {2}Arquitetura}{3}{chapter.2}
+\contentsline {section}{\numberline {2.1}Vis\IeC {\~a}o Geral da Arquitetura}{3}{section.2.1}
+\contentsline {paragraph}{}{3}{section*.4}
+\contentsline {paragraph}{}{3}{section*.5}
+\contentsline {paragraph}{}{3}{section*.6}
+\contentsline {section}{\numberline {2.2}Servi\IeC {\c c}o de Nomes e Gestor de Transa\IeC {\c c}\IeC {\~o}es}{3}{section.2.2}
+\contentsline {paragraph}{}{3}{section*.7}
+\contentsline {paragraph}{}{3}{section*.8}
+\contentsline {section}{\numberline {2.3}Modularidade e classes auxiliares}{3}{section.2.3}
+\contentsline {paragraph}{}{3}{section*.9}
+\contentsline {paragraph}{}{3}{section*.10}
