@@ -1,9 +1,9 @@
 package util;
 
 import io.atomix.catalyst.transport.Address;
-import library.Book;
-import library.Cart;
-import library.Store;
+import store.Book;
+import store.Cart;
+import store.Store;
 
 import java.util.HashMap;
 import java.util.Map;

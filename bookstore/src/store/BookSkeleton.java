@@ -1,4 +1,4 @@
-package library;
+package store;
 
 import util.DistObjManager;
 import util.RemoteObj;

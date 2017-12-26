@@ -1,4 +1,4 @@
-package library;
+package store;
 
 import io.atomix.catalyst.concurrent.ThreadContext;
 import io.atomix.catalyst.transport.Address;

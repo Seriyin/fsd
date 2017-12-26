@@ -1,4 +1,4 @@
-package library;
+package store;
 
 /**
  * The Cart interface describes operations that can be requested
