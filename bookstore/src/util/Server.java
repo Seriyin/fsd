@@ -42,7 +42,7 @@ public abstract class Server {
         known.add(new Address("127.0.0.1",10000));
         t = new NettyTransport();
         tc = new SingleThreadContext("srv-%d", new Serializer());
-        dom = new DistObjManager(known, me);
+        dom = new DistObjManager(known, me, t);
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class Server {
 
     /**
      * Register all handlers to listen as server.
-     * @param c
+     * @param c The open {@link Transport#server()} connection.
      */
     protected abstract void handlers(Connection c);
 }
