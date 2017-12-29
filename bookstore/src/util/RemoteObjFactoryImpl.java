@@ -3,7 +3,6 @@ package util;
 import bank.Bank;
 import bank.BankStub;
 import io.atomix.catalyst.transport.Address;
-import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author André Diogo
  * @author Diogo Pimenta
- * @version 1.3, 26-12-2017
+ * @version 1.5, 29-12-2017
  * @see RemoteObj
  * @see DistObjManager
  */
@@ -33,7 +32,7 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
     private Transport t;
 
     /**
-     * RemoteObjFactoryImpl needs to know the address or index(for Clique) in which it is
+     * RemoteObjFactoryImpl needs to know the address in which it is
      * operating to assign to references it generates.
      * Needs the underlying store reference to populate with exported objects.
      * @param address The network address of the process's DistObjManager.
@@ -57,9 +56,9 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
      * @return A stub or empty(in case of invalid class -> should never happen)
      * @see RemoteObj
      */
-     public Optional<Object> importRef(RemoteObj b) {
+     public Optional<? extends Stub> importRef(RemoteObj b) {
         String cls = b.getCls();
-        Optional result;
+        Optional<? extends Stub> result;
         if (cls.equals(Book.class.getName())) {
             result = Optional.of(new BookStub(b,t));
         }
@@ -76,20 +75,15 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
             result = Optional.of(new BankStub(b,t));
         }
         else if(cls.equals(TransactionsManager.class.getName())) {
-            result = Optional.of(new TransactionsManagerStub(b,t);
+            result = Optional.of(new TransactionsManagerStub(b,t));
         }
         else {
+            LOG.debug("Empty import - " + cls);
             result = Optional.empty();
         }
         return result;
     }
 
-    /**
-     * Exports a reference from a given remote object.
-     * @param b The object to export
-     * @return A reference or empty(in case of invalid class/null-parameter -> caller ensures it never happens)
-     * @see RemoteObj
-     */
     public Optional<RemoteObj> exportRef(Object b) {
         Optional<RemoteObj> result;
         if(b!=null) {
@@ -119,8 +113,8 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
             if(cls!=null) {
                 if(!objstr.containsKey(cls)) {
                     objstr.put(cls,new HashMap<>());
-                    mp = objstr.get(cls);
                 }
+                mp = objstr.get(cls);
                 long id = tag.getAndIncrement();
                 mp.put(id,b);
                 LOG.debug("Export Ref - "+cls);
