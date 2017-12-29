@@ -10,12 +10,12 @@ import io.atomix.catalyst.serializer.Serializer;
  * with a success indication.
  *
  * @author André Diogo
- * @version 1.0, 29-12-2017
+ * @version 1.1, 29-12-2017
  */
 public class RegisterReply implements CatalystSerializable {
     boolean hasSucceeded;
 
-    public boolean HasSucceeded() {
+    public boolean hasSucceeded() {
         return hasSucceeded;
     }
 
