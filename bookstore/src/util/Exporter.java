@@ -7,9 +7,15 @@ import java.util.Optional;
  * remote object exporting must adhere too.
  *
  * @author André Diogo <redan.blue27@gmail.com>
- * @version 1.0, 29-12-2017
+ * @version 1.1, 29-12-2017
  */
 public interface Exporter {
 
-   Optional<RemoteObj> exportRef(Object obj);
+    /**
+     * Export a RemoteObj from an Object instance.
+     * @param obj the Object from which to generate the remote reference.
+     * @return An optional remote reference
+     * @see RemoteObj
+     */
+    Optional<RemoteObj> exportRef(Object obj);
 }
