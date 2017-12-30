@@ -4,12 +4,12 @@ import io.atomix.catalyst.concurrent.SingleThreadContext;
 import io.atomix.catalyst.concurrent.ThreadContext;
 import io.atomix.catalyst.serializer.Serializer;
 import io.atomix.catalyst.transport.Address;
+import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import io.atomix.catalyst.transport.netty.NettyTransport;
 import pt.haslab.ekit.Log;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * TODO# Log should be trimmed. Need to keep a history of operations to trim properly.
@@ -18,30 +18,27 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p>
  * Is to be bootstrapped as the first process in charge of recording who is online.
  * <p>
- * Only one naming service will be active at one time and will log all information
- * it receives to ensure consistency.
+ * Only one naming service will be active at one time for now and will log all
+ * information it receives to ensure consistency.
  * <p>
  * Defaults to port 10000 on localhost.
- * @author Andre Diogo
- * @author Diogo Pimenta
- * @version 1.2
  * @see RemoteObj
  * @see pt.haslab.ekit.Clique
  * @see ObjectStore
  */
-public class NamingService implements ObjectStore {
+public class NamingService implements ObjectStore,TransactionsManager {
     private Map<String,Set<RemoteObj>> store;
     private RemoteObj ref;
-    private AtomicLong port;
-    private int opcount;
-    private Log l;
+    private Log log;
+    private Log coord;
     private ThreadContext tc;
     private List<Address> known;
     private Address me;
     private Transport t;
 
+
     /**
-     * Constructs a NamingService instance.
+     * Constructs a NamingService instance on port 10000, localhost.
      */
     private NamingService() {
         known = new ArrayList<>();
@@ -50,21 +47,39 @@ public class NamingService implements ObjectStore {
         t = new NettyTransport();
         tc = new SingleThreadContext("srv-%d", new Serializer());
         this.store = new HashMap<>();
-        port = new AtomicLong(10001);
         tc.execute(() -> {
-            t.server().listen(me, (c) -> {
-                //Register handlers here.
-                //c.handler();
-            });
+            openLogs();
 
-            l = new Log("naming");
+            t.server().listen(me, this::registerHandlers);
 
 
-            //Set handlers for log retrieval here.
-            l.handler(long.class,(j,m) -> port.set(m));
-            //Wait till log is consistent.
-            l.open().join();
         });
+    }
+
+    /**
+     * #TODO logging handlers.
+     * Registers log handlers, then opens logs to ensure consistency.
+     */
+    private void openLogs() {
+        log = new Log("naming");
+        coord = new Log("coord");
+
+        //Set messaging for NamingService's log.
+        log.handler(long.class,(j,m) -> {});
+        //Wait till log is consistent.
+        log.open().join();
+
+        //Set messaging for TransactionManager's log.
+        coord.handler(long.class,(j,m) -> {});
+        //Wait till coord is consistent.
+        coord.open().join();
+    }
+
+    /**
+     * Register handlers for server connection.
+     * @param connection The connection naming service listens on.
+     */
+    private void registerHandlers(Connection connection) {
     }
 
     /**
@@ -72,6 +87,7 @@ public class NamingService implements ObjectStore {
      * @param args Not used currently.
      */
     public static void main(String args[]) {
+
         NamingService nmsrv = new NamingService();
     }
 
@@ -122,16 +138,6 @@ public class NamingService implements ObjectStore {
         }
         else
             return Optional.empty();
-    }
-    /**
-     * Operation must be atomic. Getting a unique port should be truly unique
-     * even concurrently.
-     * @return a unique port number.
-     */
-    public long getUniquePort() {
-        long t = port.incrementAndGet();
-        l.append(t);
-        return t;
     }
 
 }
