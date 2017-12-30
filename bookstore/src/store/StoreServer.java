@@ -1,7 +1,8 @@
 package store;
 
 import io.atomix.catalyst.concurrent.ThreadContext;
-import io.atomix.catalyst.transport.Address;
+import io.atomix.catalyst.transport.Connection;
+import io.atomix.catalyst.transport.Transport;
 import util.DistObjManager;
 import util.ObjectStore;
 import util.Server;
@@ -9,36 +10,53 @@ import util.Server;
 /**
  * StoreServer class contains the main logic to boot up a process in an unknown
  * network topology. This server will serve a book store.
- * @author Andre Diogo
- * @author Diogo Pimenta
- * @version 1.2
  */
 public class StoreServer extends Server {
     private Store store;
     private ObjectStore objstore;
     private DistObjManager dom;
     private ThreadContext tc;
-    private Address addresses[];
 
     /**
-     * Assume safe defaults. A topology made of one object store process, a book store process,
-     * a bank process and a client process.
+     * StoreServer constructor must supply a
+     * bank name.
      * <p>
-     * Object store is number 0, Book store is number 1, Bank process is number 2, Client process is number 3.
-     * @param args can contain a path to a JSON configuration file.
+     * Should follow store_{name} convention but is
+     * not required.
+     * @param name The name of the store to register
+     */
+    protected StoreServer(String name) {
+        super(name);
+        store = new StoreSkeleton(name, getTransport(), getOwnAddress());
+    }
+
+    /**
+     * The main creates a StoreServer and executes it.
+     * <p>
+     * Expects store name as first argument,
+     * otherwise defaults to store_default.
+     * <p>
+     * Please follow this naming convention: store_{name}
+     * @param args shell arguments passed in.
      */
     public static void main(String args[]) {
-        StoreServer s  = new StoreServer();
+        String name;
+        if(args.length>0) {
+            name = args[0];
+        }
+        else {
+            name = "store_default";
+        }
+        StoreServer s  = new StoreServer(name);
+        s.setup();
         s.execute();
     }
 
     /**
-     *
+     * TODO implement execution.
      */
+    @Override
     protected void execute() {
-        // Register Requests and Replies
-        // tc.serializer().register(StoreSearchRep.class);
-
         tc.execute(() -> {
 /*
         cl.handler(Request.class, (j,m)-> {
@@ -46,6 +64,23 @@ public class StoreServer extends Server {
             });
 */
         });
+    }
+
+    /**
+     * TODO set handlers.
+     * @param c The open {@link Transport#server()} connection.
+     */
+    @Override
+    protected void handlers(Connection c) {
+
+    }
+
+    /**
+     * TODO register serializables.
+     */
+    @Override
+    protected void registerSerializables() {
+
     }
 
 }
