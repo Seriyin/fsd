@@ -1,25 +1,19 @@
 package store;
 
 import util.DistObjManager;
-import util.RemoteObj;
+import util.Skeleton;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
- * BookSkeleton class contains a book's metadata.
- * @author Andre Diogo
- * @author Diogo Pimenta
- * @version 1.1
+ * BookSkeleton class contains a book's metadata and is immutable.
  */
-public class BookSkeleton implements Book {
-
+public class BookSkeleton extends Skeleton implements Book {
     private long isbn;
     private String title;
     private List<String> authors;
     private double price;
-    private RemoteObj ro;
 
 
     /**
@@ -29,12 +23,12 @@ public class BookSkeleton implements Book {
      * @param authors List of book authors.
      * @param price Price of book listing.
      */
-    public BookSkeleton(long isbn, String title, List<String> authors, double price) {
+    public BookSkeleton(long isbn, String title,
+                        List<String> authors, double price) {
         this.isbn = isbn;
         this.title = title;
         this.authors = authors;
         this.price = price;
-        ro = null;
     }
 
     /**
@@ -46,60 +40,20 @@ public class BookSkeleton implements Book {
      * @param dom DOM that keeps the ObjectReference.
      * @see DistObjManager
      */
-    public BookSkeleton(long isbn, String title, List<String> authors, double price, DistObjManager dom) {
+    public BookSkeleton(long isbn, String title,
+                        List<String> authors, double price,
+                        DistObjManager dom) {
         this.isbn = isbn;
         this.title = title;
         this.authors = authors;
         this.price = price;
-        ro = dom.exportRef(this).orElse(null);
+        setRef(dom.exportRef(this).orElse(null));
     }
 
-
-    /**
-     * @return if the object has already been exported.
-     */
-    public boolean isExported() {
-        return ro!=null;
-    }
-
-    /**
-     * Returns the object reference
-     * @return null or RemoteObj.
-     */
-    public RemoteObj getRemoteObj() {
-        return ro;
-    }
-
-
-    /**
-     * Attempts to export this book to the provided DistObjManager.
-     * <p>
-     * If the object was already exported, does nothing and returns failure.
-     * <p>
-     * Otherwise tries to export the object.
-     * <p>
-     * Can fail if the object export fails (should never happen).
-     * @param dom The DistObjManager to export object to.
-     * @return whether the object was successfully exported, fills in remote object reference.
-     */
-    public boolean exportRef(DistObjManager dom) {
-        if(isExported()) {
-            return false;
-        }
-        else {
-            Optional<RemoteObj> obj = dom.exportRef(this);
-            ro = obj.orElse(null);
-            return ro!=null;
-        }
-    }
 
     @Override
     public long getISBN() {
         return isbn;
-    }
-
-    public void setIsbn(int isbn) {
-        this.isbn = isbn;
     }
 
     @Override
@@ -112,24 +66,24 @@ public class BookSkeleton implements Book {
         return price;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     @Override
     public List<String> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(List<String> author) {
-        this.authors = author;
-    }
-
+    /**
+     * Clone creates a book from this one with a null RemoteObj.
+     * @return cloned book.
+     */
     @Override
     public BookSkeleton clone() {
         return new BookSkeleton(this.isbn,this.title,this.authors,this.price);
     }
 
+    /**
+     * Pretty format of a book.
+     * @return a string representing the entire book.
+     */
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Book{");
@@ -140,6 +94,11 @@ public class BookSkeleton implements Book {
         return sb.toString();
     }
 
+    /**
+     * Equals that does not check for subclasses.
+     * @param o Object to compare
+     * @return whether Object o is equal to this Book.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -151,6 +110,10 @@ public class BookSkeleton implements Book {
                 Objects.equals(getAuthors(), that.getAuthors());
     }
 
+    /**
+     * Uses {@link Objects#hash(Object...)}.
+     * @return hashCode.
+     */
     @Override
     public int hashCode() {
 
