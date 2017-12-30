@@ -107,4 +107,40 @@ public final class DistObjManager {
         }
         return Optional.empty();
     }
+
+    /**
+     * #TODO Should start a lease on the remote object store.
+     * Send a register request to the first known address, which defaults to
+     * the pre-established naming service (canonically localhost:10000).
+     * <p>
+     * This request will be tried 3 times in a synchronized fashion
+     * and may except after failure with an unchecked exception.
+     * <p>
+     * Does not require a special handler to be registered.
+     * Will use {@link Connection#sendAndReceive(Object)}
+     * @param rq The request to send.
+     */
+    public void sendRegisterRequest(RegisterRequest rq) {
+        t.client().connect(known.get(0))
+                  .thenAccept(c -> syncedRegistration(c,rq));
+    }
+
+    /**
+     * This method attempts to register at the naming service connected thrice.
+     * <p>
+     * If it fails throws unchecked exception.
+     * @param connection Connection to use for sending and receiving.
+     * @param rq The Request to send.
+     */
+    private void syncedRegistration(Connection connection, RegisterRequest rq) {
+        boolean hasSucceeded = false;
+        for(int i=0;i<3 && hasSucceeded==false;i++) {
+            CompletableFuture<RegisterReply> r = connection.sendAndReceive(rq);
+            hasSucceeded = r.join().hasSucceeded();
+        }
+        if (hasSucceeded==false) {
+            throw new RuntimeException("Failed to register at naming service");
+        }
+    }
+
 }
