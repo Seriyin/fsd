@@ -11,9 +11,6 @@ import java.util.Optional;
  * Defines a paged-browsing operation, to allow book browsing.
  * <p>
  * Defines an operation to return books bought to date by a given client.
- * @author André Diogo
- * @author Diogo Pimenta
- * @version 1.0, 20-12-2017
  */
 public interface Store {
     /**
@@ -55,10 +52,10 @@ public interface Store {
     /**
      * Search the store by authors and title.
      * @param title Title of the book to search.
-     * @param author List of author names to search.
+     * @param authors List of author names to search.
      * @return List of none or more books matching the author.
      */
-    List<Book> findByTitleAndAuthor(String title, List<String> author);
+    List<Book> findByTitleAndAuthors(String title, List<String> authors);
 
     /**
      * Lists a page of existing books in the store.
@@ -76,5 +73,5 @@ public interface Store {
      * Lists all books purchased by a client in the store.
      * @return List containing all the books purchased by the client in the store.
      */
-    List<Book> getPurchased(int cid);
+    List<Book> getPurchased(long cid);
 }
