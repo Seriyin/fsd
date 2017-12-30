@@ -1,6 +1,12 @@
 package bank;
 
+import io.atomix.catalyst.transport.Address;
+import io.atomix.catalyst.transport.Transport;
+import messaging.RegisterRequest;
 import pt.haslab.ekit.Log;
+import util.DistObjManager;
+import util.Server;
+import util.Skeleton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,35 +16,46 @@ import java.util.Map;
 /**
  * Bank Skeleton implements actual bank logic against a transactional log.
  *
- * @author André Diogo
- * @version 1.0, 27-12-2017
  *
  */
-public class BankSkeleton implements Bank {
+public class BankSkeleton extends Skeleton implements Bank {
+    private DistObjManager dom;
     private Map<Long,List<Payment>> mb;
     private Log payments;
 
-    public BankSkeleton() {
+    /**
+     * Creates a bank skeleton that will be registered
+     * with the default naming service.
+     * @param name The bank's name
+     * @param t The transport to use for launching clients to {@link Address}
+     * @param me The address in which the {@link Server} the skeleton resides
+     */
+    public BankSkeleton(String name, Transport t, Address me) {
         mb = new HashMap<>();
-        payments = new Log("payments");
+        payments = new Log(name);
+        dom = new DistObjManager(me,t);
+        setRef(dom.exportRef(this).orElse(null));
         registerHandlers();
+        dom.sendRegisterRequest(new RegisterRequest(getRef(),name));
     }
 
 
     /**
-     * Register handlers for restructuring payment map from log.
+     * #TODO build handlers for 2PC.
+     * Register messaging for restructuring payment map from log.
      *
      * Must act in accordance with 2PC principles.
      */
     private void registerHandlers() {
-        payments.handler()
+        /*payments.handler()
                 .handler()
                 .handler();
         //Await coherence
-        payments.open().join();
+        payments.open().join();*/
     }
 
     /**
+     * #TODO implement registering a payment as part of a distributed transaction.
      * Registering a payment is included in a distributed transaction
      * involving a purchase in a store.
      *
@@ -69,5 +86,7 @@ public class BankSkeleton implements Bank {
         }
         return result;
     }
+
+
 
 }
