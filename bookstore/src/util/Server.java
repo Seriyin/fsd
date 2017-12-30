@@ -15,51 +15,54 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 
 
 /**
  * Server is an abstract class that encapsulates Catalyst context and network behaviour.
- * @author André Diogo
- * @version 1.2, 26-12-2017
+ *
+ * Server is immutable.
  */
 public abstract class Server {
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
     private ThreadContext tc;
     private RegisterRequest rq;
     private List<Address> known;
-    private DistObjManager dom;
     private Address me;
     private Transport t;
     private Serializer sr;
 
-    protected Serializer getSr() {
+    protected Serializer getSerializer() {
         return sr;
     }
 
-    protected ThreadContext getTc() {
+    protected Transport getTransport() {
+        return t;
+    }
+
+    protected ThreadContext getThreadContext() {
         return tc;
     }
 
-    protected List<Address> getKnown() {
+    protected List<Address> getKnownAddresses() {
         return known;
     }
 
-    protected Address getAddress() {
+    protected Address getOwnAddress() {
         return me;
     }
 
     /**
      * Handles server setup. Network connections and thread context startup.
      * <p>
-     * Assumes only it and an object store exist on the network and updates from there.
+     * Assumes only it and an the default object store exist on the network
+     * and updates from there.
      * <p>
      * The serializable classes and handle registration must be done post-construction, before
      * exports or imports.
      * <p>
      * All server classes assume they will talk to a naming service through {@link RegisterRequest} and
-     * {@link RegisterReply}.
-     * @param name The name through which to register the server in the naming service.
+     * {@link RegisterReply} which are registered in the serializer by default.
+     * @param name The name through which to register the server in the naming service.<p>
      *             Should be descriptive of function and will be bagged with other servers registering under the same
      *             name.
      */
@@ -69,7 +72,6 @@ public abstract class Server {
         t = new NettyTransport();
         sr = new Serializer();
         tc = new SingleThreadContext("srv-%d", sr);
-        dom = new DistObjManager(known, me, t);
         sr.register(RegisterRequest.class);
         sr.register(RegisterReply.class);
     }
@@ -117,38 +119,7 @@ public abstract class Server {
         }).join();
     }
 
-    /**
-     * Send a register request to the first known address, which defaults to
-     * the pre-established naming service (canonically localhost:10000).
-     * <p>
-     * This request will be tried 3 times in a synchronized fashion
-     * and may except after failure with an unchecked exception.
-     * <p>
-     * Does not require a special handler to be registered.
-     * Will use {@link Connection#sendAndReceive(Object)}
-     * @param rq The request to send.
-     */
-    protected void sendRegisterRequest(RegisterRequest rq) {
-        this.rq = rq;
-        t.client().connect(known.get(0)).thenAccept(this::syncedRegistration);
-    }
 
-    /**
-     * This method attempts to register at the naming service connected thrice.
-     * <p>
-     * If it fails throws unchecked exception.
-     * @param connection
-     */
-    private void syncedRegistration(Connection connection) {
-        boolean hasSucceeded = false;
-        for(int i=0;i<3 && hasSucceeded==false;i++) {
-            CompletableFuture<RegisterReply> r = connection.sendAndReceive(rq);
-            hasSucceeded = r.join().hasSucceeded();
-        }
-        if (hasSucceeded==false) {
-            throw new RuntimeException("Failed to register at naming service");
-        }
-    }
 
     /**
      * Execute the server is up to the underlying implementation of the server.
@@ -168,5 +139,6 @@ public abstract class Server {
      * server implementation in the thread-context's serializer.
      */
     protected abstract void registerSerializables();
+
 
 }
