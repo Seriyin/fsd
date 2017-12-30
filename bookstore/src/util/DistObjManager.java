@@ -1,30 +1,30 @@
 package util;
 
 import io.atomix.catalyst.transport.Address;
+import io.atomix.catalyst.transport.Connection;
+import io.atomix.catalyst.transport.Transport;
+import messaging.RegisterReply;
+import messaging.RegisterRequest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Each process needs to manage its available distributed objects, as well as
  * leases on remote objects. This class is in charge of this.
- * Imports and Exports RemoteObjects via a RemoteObjFactory.
+ * Imports and Exports RemoteObjects via a RemoteObjFactoryImpl.
  * <p>
  * Right now it assumes a Address + Known Addresses.
- * @see RemoteObjFactory
- * @author André Diogo
- * @author Diogo Pimenta
- * @version 1.1, 22-12-2017
+ * @see RemoteObjFactoryImpl
  */
-public final class DistObjManager {
+public final class DistObjManager implements Importer,Exporter {
     private RemoteObjFactory rof;
     private Map<String, Map<Long, Object>> objstr;
+    private Transport t;
     private List<Address> known;
-    private Address own;
+    private Address me;
 
     /**
      * Not using clique at all for dynamic networking.
@@ -33,14 +33,32 @@ public final class DistObjManager {
      * the Addresses that are known to the DistObjManager current process
      * and the actual Address of the process it's in.
      * <p>
-     * We assume each process -> one server or client.
+     * We assume each process -> one server and/or client.
      * @param known List of known addresses.
      * @param me The process's own address.
      */
-    public DistObjManager(List<Address> known, Address me) {
-        this.own = own;
+    public DistObjManager(List<Address> known, Address me, Transport t) {
+        this.me = me;
+        this.known = known;
         objstr = new HashMap<>();
-        rof = new RemoteObjFactory(own, objstr);
+        rof = new RemoteObjFactoryImpl(me, t, objstr);
+    }
+
+    /**
+     * Not using clique at all for dynamic networking.
+     * <p>
+     * Receives the actual Address of the process it's in.
+     * <p>
+     * Assumes known addresses consist only of
+     * the default naming service.
+     * @param me The process's own address.
+     */
+    public DistObjManager(Address me, Transport t) {
+        this.me = me;
+        known = new ArrayList<>();
+        known.add(new Address("127.0.0.1",10000));
+        objstr = new HashMap<>();
+        rof = new RemoteObjFactoryImpl(me, t, objstr);
     }
 
 
@@ -48,7 +66,7 @@ public final class DistObjManager {
      * TODO# Reference counting and connection handling also needs to be done.
      * Handles exporting a RemoteObj from the given object.
      * <p>
-     * Delegates actual exporting to the RemoteObjFactory
+     * Delegates actual exporting to the RemoteObjFactoryImpl
      * @param obj The object to export
      * @return the RemoteObj exported or empty.
      * @see RemoteObj
@@ -58,17 +76,18 @@ public final class DistObjManager {
         return rof.exportRef(obj);
     }
 
+
     /**
      * TODO# Reference counting and connection handling
      * Handles importing a stub from the given object reference.
      * <p>
-     * Delegates actual importing to the RemoteObjFactory
+     * Delegates actual importing to the RemoteObjFactoryImpl
      * @param b The object reference.
      * @return A stub of the object pointed to or empty.
      * @see RemoteObj
      * @see RemoteObjFactory
      */
-    public Optional<Object> importRef(RemoteObj b) {
+    public Optional<? extends Stub> importRef(RemoteObj b) {
         return rof.importRef(b);
     }
 
@@ -82,7 +101,11 @@ public final class DistObjManager {
      * @return A clone of a skeleton or empty.
      * @see RemoteObj
      */
-    public Optional<Object> importCopy(RemoteObj b) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public Optional<Object> importCopy(RemoteObj b)
+            throws InvocationTargetException,
+                   IllegalAccessException,
+                   NoSuchMethodException
+    {
         String cls = b.getCls();
         if(objstr.containsKey(cls)) {
             Map<Long,Object> mp = objstr.get(cls);
