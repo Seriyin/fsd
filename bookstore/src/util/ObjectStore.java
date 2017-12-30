@@ -3,11 +3,8 @@ package util;
 import java.util.Optional;
 
 /**
- * ObjectStore is an interface that describes how to store and recover RemoteObj instances
- * for project-wide consultation.
- * @author Andre Diogo
- * @author Diogo Pimenta
- * @version 1.1
+ * ObjectStore is an interface that describes how to store and
+ * recover RemoteObj instances for project-wide consultation.
  * @see RemoteObj
  * @see pt.haslab.ekit.Clique
  */
@@ -24,7 +21,8 @@ public interface ObjectStore {
     /**
      * Get an object reference by unique-name.
      * @param name An unique string identifying a set of objects.
-     * @return The reference to a random object of that set, or empty if no reference exists.
+     * @return The reference to a random object of that set,
+     *          or empty if no reference exists.
      */
     Optional<RemoteObj> getObject(String name);
 
