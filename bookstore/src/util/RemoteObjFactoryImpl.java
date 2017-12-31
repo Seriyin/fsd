@@ -3,7 +3,7 @@ package util;
 import bank.Bank;
 import bank.BankStub;
 import io.atomix.catalyst.transport.Address;
-import io.atomix.catalyst.transport.Transport;
+import io.atomix.catalyst.transport.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import store.*;
@@ -16,33 +16,23 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Class responsible for figuring out object type, generating references
  * and inserting the objects into the exported objects store.
- *
- *
- * @author André Diogo
- * @author Diogo Pimenta
- * @version 1.5, 29-12-2017
  * @see RemoteObj
  * @see DistObjManager
  */
 final class RemoteObjFactoryImpl implements RemoteObjFactory {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteObjFactoryImpl.class);
     private Address address;
-    private Map <String,Map<Long,Object>> objstr;
     private AtomicLong tag;
-    private Transport t;
 
     /**
      * RemoteObjFactoryImpl needs to know the address in which it is
      * operating to assign to references it generates.
-     * Needs the underlying store reference to populate with exported objects.
      * @param address The network address of the process's DistObjManager.
-     * @param objstr The object store of the DistObjManager.
      * @see DistObjManager
+     * @see ObjectStore
      */
-    RemoteObjFactoryImpl(Address address, Transport t, Map<String, Map<Long, Object>> objstr) {
+    RemoteObjFactoryImpl(Address address) {
         this.address = address;
-        this.t = t;
-        this.objstr = objstr;
         this.tag = new AtomicLong(0);
     }
 
@@ -53,29 +43,32 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
      * in order to delegate actual method invocations through RMI
      * transparently.
      * @param b The object reference
-     * @return A stub or empty(in case of invalid class -> should never happen)
+     * @param c The connection on which to import the stub
+     * @return A stub or empty {@literal (in case of invalid class ->
+     * should never happen)}
      * @see RemoteObj
+     * @see Connection
      */
-     public Optional<? extends Stub> importRef(RemoteObj b) {
+     public Optional<? extends Stub> importRef(RemoteObj b, Connection c) {
         String cls = b.getCls();
         Optional<? extends Stub> result;
         if (cls.equals(Book.class.getName())) {
-            result = Optional.of(new BookStub(b,t));
+            result = Optional.of(new BookStub(b,c));
         }
         else if(cls.equals(Cart.class.getName())) {
-            result = Optional.of(new CartStub(b,t));
+            result = Optional.of(new CartStub(b,c));
         }
         else if(cls.equals(Store.class.getName())) {
-            result = Optional.of(new StoreStub(b,t));
+            result = Optional.of(new StoreStub(b,c));
         }
-        else if(cls.equals(ObjectStore.class.getName())) {
-            result = Optional.of(new ObjectStoreStub(b,t));
+        else if(cls.equals(RemoteObjectStore.class.getName())) {
+            result = Optional.of(new RemoteObjectStoreStub(b,c));
         }
         else if(cls.equals(Bank.class.getName())) {
-            result = Optional.of(new BankStub(b,t));
+            result = Optional.of(new BankStub(b,c));
         }
         else if(cls.equals(TransactionsManager.class.getName())) {
-            result = Optional.of(new TransactionsManagerStub(b,t));
+            result = Optional.of(new TransactionsManagerStub(b,c));
         }
         else {
             LOG.debug("Empty import - " + cls);
@@ -84,7 +77,7 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
         return result;
     }
 
-    public Optional<RemoteObj> exportRef(Object b) {
+    public Optional<RemoteObj> exportRef(Object b, ObjectStore<Object> objstr) {
         Optional<RemoteObj> result;
         if(b!=null) {
             Map<Long,Object> mp;
@@ -95,8 +88,8 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
             else if (b instanceof Cart) {
                 cls = Cart.class.getName();
             }
-            else if (b instanceof ObjectStore) {
-                cls = ObjectStore.class.getName();
+            else if (b instanceof RemoteObjectStore) {
+                cls = RemoteObjectStore.class.getName();
             }
             else if (b instanceof Store) {
                 cls = Store.class.getName();
@@ -111,14 +104,15 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
                 LOG.debug("Empty Ref - "+ b);
             }
             if(cls!=null) {
-                if(!objstr.containsKey(cls)) {
-                    objstr.put(cls,new HashMap<>());
-                }
-                mp = objstr.get(cls);
                 long id = tag.getAndIncrement();
-                mp.put(id,b);
-                LOG.debug("Export Ref - "+cls);
-                result = Optional.of(new RemoteObj(address,id,cls));
+                if(objstr.insertObject(cls,id,b)){
+                    LOG.debug("Export Ref - "+cls);
+                    result = Optional.of(new RemoteObj(address,id,cls));
+                }
+                else {
+                    LOG.debug("Export Ref failed - " + cls + " " + id);
+                    result = Optional.empty();
+                }
             }
             else {
                 result = Optional.empty();
