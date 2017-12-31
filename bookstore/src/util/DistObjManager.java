@@ -21,7 +21,8 @@ import java.util.concurrent.CompletableFuture;
  */
 public final class DistObjManager implements Importer,Exporter {
     private RemoteObjFactory rof;
-    private Map<String, Map<Long, Object>> objstr;
+    private ObjectStore<Object> objstr;
+    private Map<Address, Connection> cm;
     private Transport t;
     private List<Address> known;
     private Address me;
@@ -33,15 +34,18 @@ public final class DistObjManager implements Importer,Exporter {
      * the Addresses that are known to the DistObjManager current process
      * and the actual Address of the process it's in.
      * <p>
-     * We assume each process -> one server and/or client.
+     * {@literal We assume each process -> one server and/or client.}
      * @param known List of known addresses.
      * @param me The process's own address.
+     * @param t The transport with which to work on setting up connections.
      */
     public DistObjManager(List<Address> known, Address me, Transport t) {
         this.me = me;
         this.known = known;
-        objstr = new HashMap<>();
-        rof = new RemoteObjFactoryImpl(me, t, objstr);
+        this.t = t;
+        objstr = new ObjectStoreSkeleton<>();
+        cm = new HashMap<>();
+        rof = new RemoteObjFactoryImpl(me);
     }
 
     /**
@@ -52,18 +56,20 @@ public final class DistObjManager implements Importer,Exporter {
      * Assumes known addresses consist only of
      * the default naming service.
      * @param me The process's own address.
+     * @param t The transport with which to work on setting up connections.
      */
     public DistObjManager(Address me, Transport t) {
         this.me = me;
         known = new ArrayList<>();
         known.add(new Address("127.0.0.1",10000));
-        objstr = new HashMap<>();
-        rof = new RemoteObjFactoryImpl(me, t, objstr);
+        objstr = new ObjectStoreSkeleton();
+        cm = new HashMap<>();
+        rof = new RemoteObjFactoryImpl(me);
     }
 
 
     /**
-     * TODO# Reference counting and connection handling also needs to be done.
+     * TODO Reference counting and connection handling also needs to be done.
      * Handles exporting a RemoteObj from the given object.
      * <p>
      * Delegates actual exporting to the RemoteObjFactoryImpl
@@ -73,12 +79,12 @@ public final class DistObjManager implements Importer,Exporter {
      * @see RemoteObjFactory
      */
     public Optional<RemoteObj> exportRef(Object obj) {
-        return rof.exportRef(obj);
+        return rof.exportRef(obj, objstr);
     }
 
 
     /**
-     * TODO# Reference counting and connection handling
+     * TODO Reference counting and connection handling
      * Handles importing a stub from the given object reference.
      * <p>
      * Delegates actual importing to the RemoteObjFactoryImpl
@@ -88,7 +94,16 @@ public final class DistObjManager implements Importer,Exporter {
      * @see RemoteObjFactory
      */
     public Optional<? extends Stub> importRef(RemoteObj b) {
-        return rof.importRef(b);
+        Optional<? extends Stub> result;
+        Address ad = b.getAddress();
+        if(cm.containsKey(ad)) {
+            Connection c = cm.get(ad);
+            result = rof.importRef(b,c);
+        }
+        else {
+            result = Optional.empty();
+        }
+        return result;
     }
 
     /**
@@ -100,6 +115,9 @@ public final class DistObjManager implements Importer,Exporter {
      * @param b the reference to be looked-up.
      * @return A clone of a skeleton or empty.
      * @see RemoteObj
+     * @throws InvocationTargetException Due to calling clone via reflection.
+     * @throws IllegalAccessException Due to clone being possibly not public.
+     * @throws NoSuchMethodException If clone does not exist as a method.
      */
     public Optional<Object> importCopy(RemoteObj b)
             throws InvocationTargetException,
@@ -107,32 +125,30 @@ public final class DistObjManager implements Importer,Exporter {
                    NoSuchMethodException
     {
         String cls = b.getCls();
-        if(objstr.containsKey(cls)) {
-            Map<Long,Object> mp = objstr.get(cls);
-            if (mp.containsKey(b.getId())) {
-                Object obj = mp.get(b.getId());
-                //Get current class (might be Object, not entirely helpful)
-                //Use as last resort.
-                Class co = obj.getClass();
-                //Check if it has a declared class that is more specific
-                //Use that one first.
-                Class sup = co.getDeclaringClass();
-                Method clone;
-                //Try and invoke a clone.
-                if (sup!=null) {
-                    clone = sup.getDeclaredMethod("clone");
-                }
-                else {
-                    clone = co.getDeclaredMethod("clone");
-                }
-                return Optional.of(clone.invoke(null));
+        Optional<Object> op = objstr.getObject(b.getCls(),b.getId());
+        if(op.isPresent()) {
+            Object obj = op.get();
+            //Get current class (might be Object, not entirely helpful)
+            //Use as last resort.
+            Class co = obj.getClass();
+            //Check if it has a declared class that is more specific
+            //Use that one first.
+            Class sup = co.getDeclaringClass();
+            Method clone;
+            //Try and invoke a clone.
+            if (sup!=null) {
+                clone = sup.getDeclaredMethod("clone");
             }
+            else {
+                    clone = co.getDeclaredMethod("clone");
+            }
+            return Optional.of(clone.invoke(null));
         }
         return Optional.empty();
     }
 
     /**
-     * #TODO Should start a lease on the remote object store.
+     * TODO Should start a lease on the remote object store.
      * Send a register request to the first known address, which defaults to
      * the pre-established naming service (canonically localhost:10000).
      * <p>
