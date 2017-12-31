@@ -1,4 +1,4 @@
-\select@language {english}
+\select@language {portuges}
 \contentsline {chapter}{\numberline {1}Introdu\IeC {\c c}\IeC {\~a}o}{2}{chapter.1}
 \contentsline {paragraph}{}{2}{section*.2}
 \contentsline {paragraph}{}{2}{section*.3}

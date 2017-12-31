@@ -1,6 +1,6 @@
 \documentclass[11pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
+\usepackage[portuges]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
 \usepackage{verbatim}
@@ -25,10 +25,6 @@ Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribu�
   André Diogo\\
   \includegraphics[width=2cm]{c.jpeg}\\
   \texttt{A75505}
-  \and
-  Diogo Pimenta\\
-  \includegraphics[width=2cm]{b.jpg}\\
-  \texttt{A}
 }
 
 \date{\today}
@@ -44,6 +40,7 @@ Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribu�
 \chapter{Introdução}
 
 \paragraph{}Este relatório tratará de oferecer uma visão arquitetural do projeto realizado, além de considerações e justificações sobre a implementação escolhida para os diversos componentes.
+
 \paragraph{}A descrição da API do programa estará embebida no código fonte no formato javadoc.
 
 \chapter{Arquitetura}
@@ -76,14 +73,14 @@ Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribu�
 
 \paragraph{}Para permitir uma configuração de rede razoavelmente dinâmica torna-se necessário ter um serviço de nomes capaz de registar servidores (quer de bancos quer de lojas) ativos, prontos para servir os clientes.
 
-\paragraph{}Como é necessário também ter um coordenador de transações para implementar o \texitt{Two-phase commit}, o serviço de nomes tratará também de o fazer no mesmo processo.
+\paragraph{}Como é necessário também ter um coordenador de transações para implementar o \textit{Two-phase commit}, o serviço de nomes tratará também de o fazer no mesmo processo.
 
 \section{Modularidade e classes auxiliares}
 
-\paragraph{} Para permitir uma implementação bastante modular e genérica do código envolvido na manutenção de objetos distribuídos e conexão de rede criaram-se classes auxiliares dedicadas à gestão de referências distribuídas (DistObjManager), encapsuladora de funções comuns de \texitt{leasing} de objetos e \texitt{garbage collection}, assim como importação de \texitt{Stubs
-} e exportação de \textitt{Servants} (usou-se o termo Skeleton para estes na base de código); e de gestão de conexões (Server e Stub), encapsuladoras de funções comuns de gestão de ligações, registo de \texitt{handlers} e registo de \texitt{callbacks}.
+\paragraph{} Para permitir uma implementação bastante modular e genérica do código envolvido na manutenção de objetos distribuídos e conexão de rede criaram-se classes auxiliares dedicadas à gestão de referências distribuídas (DistObjManager), encapsuladora de funções comuns de \textit{leasing} de objetos e \textit{garbage collection}, assim como importação de \textit{Stubs
+} e exportação de \textit{Servants} (usou-se o termo Skeleton para estes na base de código); e de gestão de conexões (Server e Stub), encapsuladoras de funções comuns de gestão de ligações, registo de \textit{handlers} e registo de \textit{callbacks}.
 
-\paragraph{} Estas classes abstratas tentam deferir os detalhes mais específicos (classes concretas envolvidas) para implementações mais concretas ligadas à lógica de negócio dedicada às livrarias e bancos. Tentam ser o mais \texitt{Plug 'n Play} possível, seguindo uma abordagem de inversão de controlo.
+\paragraph{} Estas classes abstratas tentam deferir os detalhes mais específicos (classes concretas envolvidas) para implementações mais concretas ligadas à lógica de negócio dedicada às livrarias e bancos. Tentam ser o mais \textit{Plug 'n Play} possível, seguindo uma abordagem de inversão de controlo.
 
 \end{document}
 
