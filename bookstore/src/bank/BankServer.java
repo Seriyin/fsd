@@ -5,13 +5,13 @@ import io.atomix.catalyst.concurrent.ThreadContext;
 import io.atomix.catalyst.serializer.Serializer;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
-import messaging.BuyReply;
-import messaging.BuyRequest;
-import messaging.ConsultReply;
-import messaging.ConsultRequest;
+import messaging.*;
 import util.Server;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * BankServer class contains the main logic to boot up a process in a connected
@@ -78,50 +78,58 @@ public class BankServer extends Server {
      * Registers all the used Request and Replies into
      * the ThreadContext's serializer.
      *
-     * @see BuyRequest
-     * @see BuyReply
+     * @see PurchaseRequest
+     * @see PurchaseReply
      * @see ConsultRequest
      * @see ConsultReply
      */
     @Override
     protected void registerSerializables(){
         Serializer sr = getSerializer();
-        sr.register(BuyRequest.class);
-        sr.register(BuyReply.class);
+        sr.register(PurchaseRequest.class);
+        sr.register(PurchaseReply.class);
         sr.register(ConsultRequest.class);
         sr.register(ConsultReply.class);
     }
 
 
     /**
-     * Register handlers for all possible stand-alone replies.
+     * Register handlers for all possible stand-alone requests.
      * @param c The open {@link Transport#server()} connection.
      * @see Connection#send(Object)
      */
     @Override
     protected void handlers(Connection c)
     {
-        c.handler(BuyReply.class,new BuyReplyHandler());
-        c.handler(ConsultReply.class,new ConsultReplyHandler());
+        c.handler(PurchaseRequest.class,new PurchaseRequestHandler());
+        c.handler(ConsultRequest.class,new ConsultRequestHandler());
     }
 
     /**
-     * #TODO implement BuyReplyHandler.
+     * TODO including 2PC steps for registration.
      */
-    private class BuyReplyHandler implements Consumer<BuyReply> {
+    private class PurchaseRequestHandler
+            implements Function<PurchaseRequest, CompletableFuture<PurchaseReply>>
+    {
 
         @Override
-        public void accept(BuyReply buyReply) {
+        public CompletableFuture<PurchaseReply> apply(PurchaseRequest rq)
+        {
+            b.register(rq.getClientID(),rq.getPayment());
+            return CompletableFuture.completedFuture(new PurchaseReply(true));
         }
     }
 
     /**
-     * #TODO implement ConsultReplyHandler.
+     * ConsultRequest returns the payment list for the client requested.
      */
-    private class ConsultReplyHandler implements Consumer<ConsultReply> {
+    private class ConsultRequestHandler
+            implements Function<ConsultRequest,CompletableFuture<ConsultReply>>
+    {
         @Override
-        public void accept(ConsultReply consultReply) {
-
+        public CompletableFuture<ConsultReply> apply(ConsultRequest rq) {
+            List<Payment> lp = b.consult(rq.getClientID());
+            return CompletableFuture.completedFuture(new ConsultReply(lp));
         }
     }
 
