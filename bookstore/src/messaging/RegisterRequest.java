@@ -21,13 +21,17 @@ public class RegisterRequest extends ObjRequest {
 
     @Override
     public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
-        getRemoteObj().writeObject(buffer,serializer);
+        super.writeObject(buffer,serializer);
         serializer.writeObject(regName);
     }
 
     @Override
     public void readObject(BufferInput<?> buffer, Serializer serializer) {
-        setRemoteObj(serializer.readObject(buffer));
+        super.readObject(buffer, serializer);
         regName = buffer.readString();
+    }
+
+    public String getName() {
+        return regName;
     }
 }
