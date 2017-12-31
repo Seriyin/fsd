@@ -7,9 +7,13 @@ import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import io.atomix.catalyst.transport.netty.NettyTransport;
+import messaging.RegisterReply;
+import messaging.RegisterRequest;
 import pt.haslab.ekit.Log;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 /**
  * TODO# Log should be trimmed. Need to keep a history of operations to trim properly.
@@ -24,9 +28,9 @@ import java.util.*;
  * Defaults to port 10000 on localhost.
  * @see RemoteObj
  * @see pt.haslab.ekit.Clique
- * @see ObjectStore
+ * @see RemoteObjectStore
  */
-public class NamingService implements ObjectStore,TransactionsManager {
+public class NamingService implements RemoteObjectStore,TransactionsManager {
     private Map<String,Set<RemoteObj>> store;
     private RemoteObj ref;
     private Log log;
@@ -77,9 +81,10 @@ public class NamingService implements ObjectStore,TransactionsManager {
 
     /**
      * Register handlers for server connection.
-     * @param connection The connection naming service listens on.
+     * @param c The connection naming service listens on.
      */
-    private void registerHandlers(Connection connection) {
+    private void registerHandlers(Connection c) {
+        c.handler(RegisterRequest.class, new RegisterRequestHandler());
     }
 
     /**
@@ -140,4 +145,27 @@ public class NamingService implements ObjectStore,TransactionsManager {
             return Optional.empty();
     }
 
+    /**
+     * TODO logging.
+     * Register request handler always returns a completedFuture for now.
+     */
+    private class RegisterRequestHandler
+            implements Function<RegisterRequest, CompletableFuture<RegisterReply>>
+    {
+        @Override
+        public CompletableFuture<RegisterReply> apply(RegisterRequest rq)
+        {
+            String name = rq.getName();
+            RemoteObj ro = rq.getRemoteObj();
+            if(store.containsKey(name)) {
+                store.get(name).add(ro);
+            }
+            else{
+                Set<RemoteObj> sro = new HashSet<>();
+                sro.add(ro);
+                store.put(name,sro);
+            }
+            return CompletableFuture.completedFuture(new RegisterReply(true));
+        }
+    }
 }
