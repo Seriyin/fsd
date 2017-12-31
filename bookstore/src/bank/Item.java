@@ -3,11 +3,6 @@ package bank;
 import java.util.Objects;
 
 /**
- * Item is a simple immutable object containing an item description and a value charged for that item.
- *
- * @author André Diogo
- * @author Diogo Pimenta
- * @version 1.1, 20-12-2017
  */
 public final class Item {
     private String item;

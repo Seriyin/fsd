@@ -10,9 +10,6 @@ import util.RemoteObj;
  * <p>
  * Must contain a RemoteObj of the main object to export globally, as well
  * as a String identifying the name under which it is retrievable.
- *
- * @author André Diogo
- * @version 1.0,29-12-2017
  */
 public class RegisterRequest extends ObjRequest {
     private String regName;

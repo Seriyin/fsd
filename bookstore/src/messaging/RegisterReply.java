@@ -8,9 +8,6 @@ import io.atomix.catalyst.serializer.Serializer;
 /**
  * Register reply is a simple reply to a naming service registration,
  * with a success indication.
- *
- * @author André Diogo
- * @version 1.1, 29-12-2017
  */
 public class RegisterReply implements CatalystSerializable {
     boolean hasSucceeded;

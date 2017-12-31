@@ -6,9 +6,6 @@ import java.util.List;
  * Bank describes operations allowed over payments.
  * <p>
  * Allows payment registration and consultation.
- * @author André Diogo
- * @author Diogo Pimenta
- * @version 1.0, 20-12-2017
  */
 public interface Bank {
 

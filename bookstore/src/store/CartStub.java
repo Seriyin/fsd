@@ -6,12 +6,6 @@ import util.Stub;
 
 public class CartStub extends Stub implements Cart {
 
-    /**
-     * Constructor for Stub takes in RemoteObj and Transport.
-     *
-     * @param ro RemoteObj of the actual object.
-     * @param t  Transport over which to connect.
-     */
     public CartStub(RemoteObj ro, Transport t) {
         super(ro, t);
     }

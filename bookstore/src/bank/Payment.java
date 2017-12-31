@@ -5,10 +5,6 @@ import java.util.Objects;
 
 /**
  * Payment class contains an itemized receipt.
- *
- * @author André Diogo
- * @author Diogo Pimenta
- * @version 1.1, 20-12-2017
  */
 public final class Payment {
     private List<Item> items;
