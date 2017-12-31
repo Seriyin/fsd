@@ -1,13 +1,23 @@
 package util;
 
+
+import io.atomix.catalyst.transport.Connection;
+
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Interface that describes how to import and export RemoteObjs, that
  * factories of RemoteObj must adhere to.
- *
+ * <p>
  * They must implement export and import.
- *
- * @author André Diogo
- * @version 1.1, 29-12-2017
+ * <p>
+ * The RemoteObjFactory is more specific and includes connection specifics.
  * @see RemoteObjFactoryImpl
  */
-public interface RemoteObjFactory extends Importer,Exporter {}
+public interface RemoteObjFactory {
+
+    Optional<? extends Stub> importRef(RemoteObj ref, Connection c);
+    Optional<RemoteObj> exportRef(Object obj, ObjectStore<Object> objstr);
+
+}
