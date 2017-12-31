@@ -1,10 +1,17 @@
 package bank;
 
+import io.atomix.catalyst.buffer.BufferInput;
+import io.atomix.catalyst.buffer.BufferOutput;
+import io.atomix.catalyst.serializer.CatalystSerializable;
+import io.atomix.catalyst.serializer.Serializer;
+
 import java.util.Objects;
 
 /**
+ * Item is a simple immutable object containing an item description
+ * and a value charged for that item.
  */
-public final class Item {
+public class Item implements CatalystSerializable {
     private String item;
     private double charge;
 
@@ -45,5 +52,17 @@ public final class Item {
           .append(charge)
           .append(" }");
         return sb.toString();
+    }
+
+    @Override
+    public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
+        buffer.writeString(item);
+        buffer.writeDouble(charge);
+    }
+
+    @Override
+    public void readObject(BufferInput<?> buffer, Serializer serializer) {
+        item = buffer.readString();
+        charge = buffer.readDouble();
     }
 }
