@@ -1,12 +1,18 @@
 package bank;
 
+import io.atomix.catalyst.buffer.BufferInput;
+import io.atomix.catalyst.buffer.BufferOutput;
+import io.atomix.catalyst.serializer.CatalystSerializable;
+import io.atomix.catalyst.serializer.Serializer;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Payment class contains an itemized receipt.
  */
-public final class Payment {
+public class Payment implements CatalystSerializable {
     private List<Item> items;
     private double charge;
 
@@ -50,5 +56,25 @@ public final class Payment {
           .append("}")
           .append(ln);
         return sb.toString();
+    }
+
+    @Override
+    public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
+        buffer.writeInt(items.size());
+        for(Item it : items) {
+            buffer.writeByte(1);
+            serializer.writeObject(it);
+        }
+        buffer.writeByte(0);
+        buffer.writeDouble(charge);
+    }
+
+    @Override
+    public void readObject(BufferInput<?> buffer, Serializer serializer) {
+        items = new ArrayList<>(buffer.readInt());
+        while(buffer.readByte()!=0) {
+            items.add(serializer.readObject(buffer));
+        }
+        charge = buffer.readDouble();
     }
 }
