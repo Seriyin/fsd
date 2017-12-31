@@ -1,5 +1,6 @@
 package store;
 
+import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import util.RemoteObj;
 import util.Stub;
@@ -8,18 +9,18 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * TODO: Implement consultations.
+ * TODO Implement consultations.
  */
 public class StoreStub extends Stub implements Store {
 
     /**
-     * Constructor for Stub takes in RemoteObj and Transport.
+     * Constructor for Stub takes in RemoteObj and Connection.
      *
      * @param ro RemoteObj of the actual object.
-     * @param t  Transport over which to connect.
+     * @param c Connection over which to send requests.
      */
-    public StoreStub(RemoteObj ro, Transport t) {
-        super(ro, t);
+    public StoreStub(RemoteObj ro, Connection c) {
+        super(ro, c);
     }
 
     @Override

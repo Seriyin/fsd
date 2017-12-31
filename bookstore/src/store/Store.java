@@ -59,6 +59,7 @@ public interface Store {
 
     /**
      * Lists a page of existing books in the store.
+     * @param page the page number to grab.
      * @return List containing a page of books in the store.
      */
     List<Book> browse(int page);
@@ -71,6 +72,7 @@ public interface Store {
 
     /**
      * Lists all books purchased by a client in the store.
+     * @param cid The client's id.
      * @return List containing all the books purchased by the client in the store.
      */
     List<Book> getPurchased(long cid);

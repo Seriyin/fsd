@@ -42,7 +42,7 @@ public class BookSkeleton extends Skeleton implements Book {
      */
     public BookSkeleton(long isbn, String title,
                         List<String> authors, double price,
-                        DistObjManager dom) {
+                        final DistObjManager dom) {
         this.isbn = isbn;
         this.title = title;
         this.authors = authors;
@@ -95,7 +95,7 @@ public class BookSkeleton extends Skeleton implements Book {
     }
 
     /**
-     * Equals that does not check for subclasses.
+     * Equals that does not check for subclasses or remote ref.
      * @param o Object to compare
      * @return whether Object o is equal to this Book.
      */
@@ -116,7 +116,6 @@ public class BookSkeleton extends Skeleton implements Book {
      */
     @Override
     public int hashCode() {
-
         return Objects.hash(isbn, getTitle(), getAuthors(), getPrice());
     }
 }

@@ -9,20 +9,18 @@ import io.atomix.catalyst.serializer.Serializer;
  * Register reply is a simple reply to a naming service registration,
  * with a success indication.
  */
-public class RegisterReply implements CatalystSerializable {
-    boolean hasSucceeded;
-
-    public boolean hasSucceeded() {
-        return hasSucceeded;
+public class RegisterReply extends SReply implements CatalystSerializable {
+    public RegisterReply(boolean hasSucceeded) {
+        super(hasSucceeded);
     }
 
     @Override
     public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
-        buffer.writeBoolean(hasSucceeded);
+        super.writeObject(buffer,serializer);
     }
 
     @Override
     public void readObject(BufferInput<?> buffer, Serializer serializer) {
-        hasSucceeded = buffer.readBoolean();
+        super.readObject(buffer,serializer);
     }
 }

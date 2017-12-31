@@ -1,5 +1,6 @@
 package bank;
 
+import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import util.RemoteObj;
 import util.Stub;
@@ -10,9 +11,9 @@ public class BankStub extends Stub implements Bank {
     private List<Payment> paymentCache;
 
 
-    public BankStub(RemoteObj b, Transport t)
+    public BankStub(RemoteObj b, Connection c)
     {
-        super(b,t);
+        super(b,c);
         paymentCache = null;
     }
 

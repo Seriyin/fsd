@@ -4,7 +4,7 @@ import io.atomix.catalyst.concurrent.ThreadContext;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import util.DistObjManager;
-import util.ObjectStore;
+import util.RemoteObjectStore;
 import util.Server;
 
 /**
@@ -13,7 +13,7 @@ import util.Server;
  */
 public class StoreServer extends Server {
     private Store store;
-    private ObjectStore objstore;
+    private RemoteObjectStore objstore;
     private DistObjManager dom;
     private ThreadContext tc;
 

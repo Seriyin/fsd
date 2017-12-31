@@ -2,6 +2,7 @@ package util;
 
 import io.atomix.catalyst.concurrent.ThreadContext;
 import io.atomix.catalyst.transport.Client;
+import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 
 
@@ -14,18 +15,18 @@ import io.atomix.catalyst.transport.Transport;
  */
 public abstract class Stub {
     private ThreadContext tc;
-    private Transport t;
+    private Connection c;
     private RemoteObj ro;
 
 
     /**
      * Constructor for Stub takes in RemoteObj and Transport.
      * @param ro RemoteObj of the actual object.
-     * @param t Transport over which to connect.
+     * @param c Connection over which to send requests.
      */
-    protected Stub(RemoteObj ro, Transport t) {
+    protected Stub(RemoteObj ro, Connection c) {
         tc = ThreadContext.currentContext();
-        this.t = t;
+        this.c = c;
         this.ro = ro;
     }
 
