@@ -16,7 +16,6 @@ import java.util.Map;
 /**
  * Bank Skeleton implements actual bank logic against a transactional log.
  *
- *
  */
 public class BankSkeleton extends Skeleton implements Bank {
     private DistObjManager dom;
@@ -26,14 +25,14 @@ public class BankSkeleton extends Skeleton implements Bank {
     /**
      * Creates a bank skeleton that will be registered
      * with the default naming service.
-     * @param name The bank's name
-     * @param t The transport to use for launching clients to {@link Address}
-     * @param me The address in which the {@link Server} the skeleton resides
+     * @param name The bank's name.
+     * @param dom The DistObjManager to use for
+     *            remote reference management.
      */
-    public BankSkeleton(String name, Transport t, Address me) {
+    public BankSkeleton(String name, DistObjManager dom) {
         mb = new HashMap<>();
         payments = new Log(name);
-        dom = new DistObjManager(me,t);
+        this.dom = dom;
         setRef(dom.exportRef(this).orElse(null));
         registerHandlers();
         dom.sendRegisterRequest(new RegisterRequest(getRef(),name));
@@ -66,7 +65,12 @@ public class BankSkeleton extends Skeleton implements Bank {
      */
     @Override
     public boolean register(long cid, Payment p) {
-        return false;
+        boolean hasSucceeded = false;
+        if(mb.containsKey(cid))
+        {
+            hasSucceeded = mb.get(cid).add(p);
+        }
+        return hasSucceeded;
     }
 
 

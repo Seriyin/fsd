@@ -27,7 +27,7 @@ public class StoreServer extends Server {
      */
     protected StoreServer(String name) {
         super(name);
-        store = new StoreSkeleton(name, getTransport(), getOwnAddress());
+        store = new StoreSkeleton(name, getDom());
     }
 
     /**

@@ -24,12 +24,12 @@ import java.util.Random;
  */
 public abstract class Server {
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
-    private ThreadContext tc;
-    private RegisterRequest rq;
-    private List<Address> known;
+    private final DistObjManager dom;
+    private final ThreadContext tc;
+    private final List<Address> known;
     private Address me;
-    private Transport t;
-    private Serializer sr;
+    private final Transport t;
+    private final Serializer sr;
 
     protected Serializer getSerializer() {
         return sr;
@@ -50,6 +50,8 @@ public abstract class Server {
     protected Address getOwnAddress() {
         return me;
     }
+
+    protected DistObjManager getDom() { return dom; }
 
     /**
      * Handles server setup. Network connections and thread context startup.
@@ -74,6 +76,7 @@ public abstract class Server {
         tc = new SingleThreadContext("srv-%d", sr);
         sr.register(RegisterRequest.class);
         sr.register(RegisterReply.class);
+        dom = new DistObjManager(known,me,t);
     }
 
     /**

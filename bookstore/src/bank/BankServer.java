@@ -6,6 +6,7 @@ import io.atomix.catalyst.serializer.Serializer;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import messaging.*;
+import util.DistObjManager;
 import util.Server;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class BankServer extends Server {
     public BankServer(String name)
     {
         super(name);
-        b = new BankSkeleton(name,getTransport(),getOwnAddress());
+        b = new BankSkeleton(name,getDom());
     }
 
     /**

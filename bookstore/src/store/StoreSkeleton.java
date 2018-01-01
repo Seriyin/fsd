@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 /**
  * TODO Logging in the store.
- *
+ * Store Skeleton implements an actual store.
  */
 public class StoreSkeleton extends Skeleton implements Store {
     private Set<Book> sb;
@@ -20,12 +20,12 @@ public class StoreSkeleton extends Skeleton implements Store {
     private String name;
     private DistObjManager dom;
 
-    public StoreSkeleton(String name, Transport transport, Address ownAddress) {
+    public StoreSkeleton(String name, DistObjManager dom) {
         this.name = name;
         sb = new HashSet<>();
         mb = new HashMap<>();
         purchases = new Log(name);
-        DistObjManager dom = new DistObjManager(ownAddress,transport);
+        this.dom = dom;
         setRef(dom.exportRef(this).orElse(null));
     }
 
@@ -50,10 +50,16 @@ public class StoreSkeleton extends Skeleton implements Store {
                  .collect(Collectors.toList());
     }
 
+    /**
+     * Tests for common authores
+     * @param authors First list.
+     * @param authors1 Second list
+     * @return whether there are any common authors.
+     */
     private boolean hasCommonAuthors(List<String> authors, List<String> authors1) {
         boolean hasCommon = false;
         hasCommon = authors1.stream()
-                            .anyMatch(a -> authors.contains(a));
+                            .anyMatch(authors::contains);
         return hasCommon;
     }
 
@@ -86,7 +92,9 @@ public class StoreSkeleton extends Skeleton implements Store {
         if(page>0) {
             if(sb.size()>(page-1)*20) {
                 Iterator<Book> it = sb.iterator();
-                for (int i = 0; it.hasNext() && i < (page - 1) * 20; i++, it.next()) ;
+                for (int i = 0; it.hasNext() && i < (page - 1) * 20; i++) {
+                    it.next();
+                }
                 for (int i = 0; it.hasNext() && i < 20; i++) {
                     lb.add(it.next());
                 }
@@ -97,7 +105,7 @@ public class StoreSkeleton extends Skeleton implements Store {
 
     @Override
     public List<Book> listBooks() {
-        return sb.stream().collect(Collectors.toList());
+        return new ArrayList<>(sb);
     }
 
     @Override
