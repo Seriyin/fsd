@@ -1,21 +1,31 @@
 package messaging;
 
+import bank.Item;
 import bank.Payment;
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
+import store.Book;
 import util.RemoteObj;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Purchase Request takes the payment to synchronize in the bank.
+ *
+ * Constructs the payment from the cart list.
  */
 public class PurchaseRequest extends ObjRequest {
     private Payment p;
     private long cid;
 
-    public PurchaseRequest(RemoteObj ro, Payment p) {
+    public PurchaseRequest(RemoteObj ro, List<Book> bl) {
         super(ro);
-        this.p = p;
+        this.p = new Payment(bl.stream()
+                               .collect(ArrayList::new,
+                                       (li,b) -> li.add(new Item(b.getTitle(),b.getPrice())),
+                                       (li1,li2) -> li1.addAll(li2)));
         this.cid = cid;
     }
 
