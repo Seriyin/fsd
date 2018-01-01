@@ -5,9 +5,6 @@ package store;
  * over a Cart.
  * <p>
  * These include buying all the cart items and adding or removing from the cart.
- * @author André Diogo
- * @author Diogo Pimenta
- * @version 1.1, 20-12-2017
  */
 public interface Cart {
 

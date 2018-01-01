@@ -5,7 +5,6 @@ import bank.Payment;
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import store.Book;
 import util.RemoteObj;
 
 import java.util.ArrayList;

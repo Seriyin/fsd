@@ -30,4 +30,11 @@ public abstract class Stub {
         this.ro = ro;
     }
 
+    protected Connection getConnection() {
+        return c;
+    }
+
+    protected RemoteObj getRef() {
+        return ro;
+    }
 }

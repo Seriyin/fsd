@@ -10,7 +10,7 @@ import util.RemoteObj;
  */
 public class BuyRequest extends ObjRequest {
 
-    protected BuyRequest(RemoteObj ro) {
+    public BuyRequest(RemoteObj ro) {
         super(ro);
     }
 
