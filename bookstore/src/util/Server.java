@@ -7,8 +7,8 @@ import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import io.atomix.catalyst.transport.netty.NettyTransport;
-import messaging.RegisterReply;
-import messaging.RegisterRequest;
+import messaging.util.InsertRemoteObjReply;
+import messaging.util.InsertRemoteObjRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,9 +62,10 @@ public abstract class Server {
      * The serializable classes and handle registration must be done post-construction, before
      * exports or imports.
      * <p>
-     * All server classes assume they will talk to a naming service through {@link RegisterRequest} and
-     * {@link RegisterReply} which are registered in the serializer by default.
-     * @param name The name through which to register the server in the naming service.<p>
+     * All server classes assume they will talk to a naming service through
+     * {@link messaging.util.InsertRemoteObjRequest} and {@link messaging.util.InsertRemoteObjReply}
+     * which are registered in the serializer by default.
+     * @param name The name through which to registerPayment the server in the naming service.<p>
      *             Should be descriptive of function and will be bagged with other servers registering under the same
      *             name.
      */
@@ -74,8 +75,8 @@ public abstract class Server {
         t = new NettyTransport();
         sr = new Serializer();
         tc = new SingleThreadContext("srv-%d", sr);
-        sr.register(RegisterRequest.class);
-        sr.register(RegisterReply.class);
+        sr.register(InsertRemoteObjRequest.class);
+        sr.register(InsertRemoteObjReply.class);
         dom = new DistObjManager(known,me,t);
     }
 
@@ -85,9 +86,9 @@ public abstract class Server {
      * User ports are in range 1024-(48127+1024).
      * @throws RuntimeException if 3 sucessive failures
      */
-     private void tryPort() {
+    private void tryPort() {
         boolean success = false;
-        for(int i=0;i<3 && success==false;i++) {
+        for(int i = 0;i<3 && !success; i++) {
             try {
                 Random r = new Random();
                 me = new Address("127.0.0.1", r.nextInt(48127)+1024);
@@ -97,7 +98,7 @@ public abstract class Server {
             }
             catch (Exception e) {e.printStackTrace();}
         }
-        if(success==false){
+        if(!success){
             throw new RuntimeException("Can't Open Port");
         }
     }
@@ -108,18 +109,16 @@ public abstract class Server {
      * Specify actual underlying server implementation in the {@link #execute()} method
      * to get called after initial server setup;
      * <p>
-     * setup() will attempt to register serializables ({@link #registerSerializables()}),
+     * setup() will attempt to registerPayment serializables ({@link #registerSerializables()}),
      * open a random user port through {@link #tryPort} and finally attempting to
-     * register handlers ({@link #handlers(Connection)}).
+     * registerPayment handlers ({@link #handlers(Connection)}).
      * <p>
      * May except due to port failure {@link #tryPort()}
      */
     protected void setup() {
         registerSerializables();
-        tc.execute(() -> {
-            //Might except due to port failure
-            tryPort();
-        }).join();
+        //Might except due to port failure
+        tc.execute(this::tryPort).join();
     }
 
 
