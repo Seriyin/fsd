@@ -16,14 +16,14 @@ public interface Store {
     /**
      * Search the store by title.
      * @param title Title to search.
-     * @return List of none or more books matching the title.
+     * @return Future of a list of none or more books matching the title.
      */
     List<Book> findByTitle(String title);
 
     /**
      * Search the store by author.
      * @param author Name of the author to search.
-     * @return List of none or more books matching the author.
+     * @return Future of a list of none or more books matching the author.
      */
     List<Book> findByAuthor(String author);
 
@@ -32,7 +32,7 @@ public interface Store {
      * @param authors List of author names to search.
      * @return List of none or more books matching the author.
      */
-    List<Book> findByAuthor(List<String> authors);
+    List<Book> findByAuthors(List<String> authors);
 
     /**
      * Search the store by isbn.
@@ -76,4 +76,11 @@ public interface Store {
      * @return List containing all the books purchased by the client in the store.
      */
     List<Book> getPurchased(long cid);
+
+    /**
+     * Buy the current selection of books in cart.
+     * @param c Cart that contains the books.
+     * @return whether the buying operation succeeded.
+     */
+    boolean buy(Cart c);
 }
