@@ -1,15 +1,17 @@
-package messaging;
+package messaging.bank;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
+import messaging.util.ObjRequest;
 import util.RemoteObj;
 
 
 /**
  * ConsultRequest needs only the bank remote reference and a client id.
  */
-public class ConsultRequest extends ObjRequest {
+public class ConsultRequest extends ObjRequest
+{
     private long cid;
 
     public ConsultRequest(RemoteObj ro, long cid) {
