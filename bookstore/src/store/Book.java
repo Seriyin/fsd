@@ -7,7 +7,6 @@ import io.atomix.catalyst.serializer.Serializer;
 import util.DistObjManager;
 import util.Skeleton;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -131,12 +130,7 @@ public class Book extends Skeleton implements CatalystSerializable {
         buffer.writeLong(isbn);
         buffer.writeDouble(price);
         buffer.writeString(title);
-        buffer.writeInt(authors.size());
-        for(String author : authors) {
-            buffer.writeByte(1);
-            buffer.writeString(author);
-        }
-        buffer.writeByte(0);
+        serializer.writeObject(authors,buffer);
     }
 
     @Override
@@ -145,9 +139,6 @@ public class Book extends Skeleton implements CatalystSerializable {
         isbn = buffer.readLong();
         price = buffer.readDouble();
         title = buffer.readString();
-        authors = new ArrayList<>(buffer.readInt());
-        while(buffer.readByte()!=0) {
-            authors.add(buffer.readString());
-        }
+        authors = serializer.readObject(buffer);
     }
 }
