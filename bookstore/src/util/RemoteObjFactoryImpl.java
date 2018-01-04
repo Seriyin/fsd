@@ -6,9 +6,11 @@ import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import store.*;
+import store.Cart;
+import store.CartStub;
+import store.Store;
+import store.StoreStub;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -52,10 +54,7 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
      public Optional<? extends Stub> importRef(RemoteObj b, Connection c) {
         String cls = b.getCls();
         Optional<? extends Stub> result;
-        if (cls.equals(Book.class.getName())) {
-            result = Optional.of(new BookStub(b,c));
-        }
-        else if(cls.equals(Cart.class.getName())) {
+        if(cls.equals(Cart.class.getName())) {
             result = Optional.of(new CartStub(b,c));
         }
         else if(cls.equals(Store.class.getName())) {
@@ -70,6 +69,14 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
         else if(cls.equals(TransactionsManager.class.getName())) {
             result = Optional.of(new TransactionsManagerStub(b,c));
         }
+        else if(cls.equals(RemoteObjectStore.class.getName()))
+        {
+            result = Optional.of(new RemoteObjectStoreStub(b,c));
+        }
+        else if(cls.equals(NamingService.class.getName()))
+        {
+            result = Optional.of(new NamingServiceStub(b,c));
+        }
         else {
             LOG.debug("Empty import - " + cls);
             result = Optional.empty();
@@ -82,11 +89,11 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
         if(b!=null) {
             Map<Long,Object> mp;
             String cls = null;
-            if (b instanceof Book) {
-                cls = Book.class.getName();
-            }
-            else if (b instanceof Cart) {
+            if (b instanceof Cart) {
                 cls = Cart.class.getName();
+            }
+            else if (b instanceof NamingService) {
+                cls = NamingService.class.getName();
             }
             else if (b instanceof RemoteObjectStore) {
                 cls = RemoteObjectStore.class.getName();
