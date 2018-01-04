@@ -1,8 +1,10 @@
 package util;
 
 import io.atomix.catalyst.transport.Connection;
-import messaging.GetRemoteObjReply;
-import messaging.GetRemoteObjRequest;
+import messaging.util.GetRemoteObjReply;
+import messaging.util.GetRemoteObjRequest;
+import messaging.util.InsertRemoteObjReply;
+import messaging.util.InsertRemoteObjRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,12 +48,28 @@ public class RemoteObjectStoreStub extends Stub implements RemoteObjectStore {
     }
 
     @Override
-    public Optional<RemoteObj> getObject(String name) {
-        return Optional.empty();
+    public Optional<RemoteObj> getObject(String name)
+    {
+        Optional<RemoteObj> ro;
+        if(cached.containsKey(name)) {
+            RemoteObj cache = cached.get(name);
+            ro = Optional.of(cache);
+        }
+        else {
+            GetRemoteObjRequest rq = new GetRemoteObjRequest(getRef(),name);
+            ro = getConnection().<GetRemoteObjRequest, GetRemoteObjReply>sendAndReceive(rq)
+                         .join().getRemoteObj();
+        }
+        return ro;
     }
 
     @Override
-    public boolean insertObject(String name, RemoteObj ro) {
-        return false;
+    public boolean insertObject(String name, RemoteObj ro)
+    {
+        InsertRemoteObjRequest rq = new InsertRemoteObjRequest(ro, name);
+        return getConnection().<InsertRemoteObjRequest, InsertRemoteObjReply>
+                                       sendAndReceive(rq)
+                              .join()
+                              .hasSucceeded();
     }
 }
