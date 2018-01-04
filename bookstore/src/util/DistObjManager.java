@@ -3,8 +3,8 @@ package util;
 import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
-import messaging.RegisterReply;
-import messaging.RegisterRequest;
+import messaging.util.InsertRemoteObjReply;
+import messaging.util.InsertRemoteObjRequest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -62,7 +62,7 @@ public final class DistObjManager implements Importer,Exporter {
         this.me = me;
         known = new ArrayList<>();
         known.add(new Address("127.0.0.1",10000));
-        objstr = new ObjectStoreSkeleton();
+        objstr = new ObjectStoreSkeleton<>();
         cm = new HashMap<>();
         rof = new RemoteObjFactoryImpl(me);
     }
@@ -158,8 +158,9 @@ public final class DistObjManager implements Importer,Exporter {
      * Does not require a special handler to be registered.
      * Will use {@link Connection#sendAndReceive(Object)}
      * @param rq The request to send.
+     * @throws RuntimeException
      */
-    public void sendRegisterRequest(RegisterRequest rq) {
+    public void sendRegisterRequest(InsertRemoteObjRequest rq) {
         t.client().connect(known.get(0))
                   .thenAccept(c -> syncedRegistration(c,rq));
     }
@@ -170,15 +171,16 @@ public final class DistObjManager implements Importer,Exporter {
      * If it fails throws unchecked exception.
      * @param connection Connection to use for sending and receiving.
      * @param rq The Request to send.
+     * @throws RuntimeException
      */
-    private void syncedRegistration(Connection connection, RegisterRequest rq) {
+    private void syncedRegistration(Connection connection, InsertRemoteObjRequest rq) {
         boolean hasSucceeded = false;
-        for(int i=0;i<3 && hasSucceeded==false;i++) {
-            CompletableFuture<RegisterReply> r = connection.sendAndReceive(rq);
+        for(int i = 0;i<3 && !hasSucceeded; i++) {
+            CompletableFuture<InsertRemoteObjReply> r = connection.sendAndReceive(rq);
             hasSucceeded = r.join().hasSucceeded();
         }
-        if (hasSucceeded==false) {
-            throw new RuntimeException("Failed to register at naming service");
+        if (!hasSucceeded) {
+            throw new RuntimeException("Failed to registerPayment at naming service");
         }
     }
 
