@@ -1,4 +1,4 @@
-package messaging;
+package messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
@@ -10,7 +10,8 @@ import java.util.Optional;
 /**
  * Remote Object reply from a naming service.
  */
-public class GetRemoteObjReply extends ObjReply {
+public class GetRemoteObjReply extends ObjReply
+{
     GetRemoteObjReply(Optional<RemoteObj> ro) {
         super(ro);
     }
