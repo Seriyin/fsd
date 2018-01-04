@@ -5,7 +5,6 @@ import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.serializer.Serializer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,7 +17,7 @@ public class Payment implements CatalystSerializable {
 
     public Payment(List<Item> items) {
         this.items = items;
-        this.charge = items.stream().mapToDouble(Item::getCharge).sum();
+        this.charge = items.stream().mapToDouble(Item::getTotalCharge).sum();
     }
 
     public List<Item> getItems() {
@@ -60,21 +59,13 @@ public class Payment implements CatalystSerializable {
 
     @Override
     public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
-        buffer.writeInt(items.size());
-        for(Item it : items) {
-            buffer.writeByte(1);
-            serializer.writeObject(it);
-        }
-        buffer.writeByte(0);
+        serializer.writeObject(items, buffer);
         buffer.writeDouble(charge);
     }
 
     @Override
     public void readObject(BufferInput<?> buffer, Serializer serializer) {
-        items = new ArrayList<>(buffer.readInt());
-        while(buffer.readByte()!=0) {
-            items.add(serializer.readObject(buffer));
-        }
+        items = serializer.readObject(buffer);
         charge = buffer.readDouble();
     }
 }
