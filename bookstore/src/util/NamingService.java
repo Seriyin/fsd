@@ -2,13 +2,14 @@ package util;
 
 import io.atomix.catalyst.concurrent.SingleThreadContext;
 import io.atomix.catalyst.concurrent.ThreadContext;
+import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.serializer.Serializer;
 import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import io.atomix.catalyst.transport.netty.NettyTransport;
-import messaging.RegisterReply;
-import messaging.RegisterRequest;
+import messaging.util.InsertRemoteObjReply;
+import messaging.util.InsertRemoteObjRequest;
 import pt.haslab.ekit.Log;
 
 import java.util.*;
@@ -53,10 +54,7 @@ public class NamingService implements RemoteObjectStore,TransactionsManager {
         this.store = new HashMap<>();
         tc.execute(() -> {
             openLogs();
-
             t.server().listen(me, this::registerHandlers);
-
-
         });
     }
 
@@ -84,7 +82,7 @@ public class NamingService implements RemoteObjectStore,TransactionsManager {
      * @param c The connection naming service listens on.
      */
     private void registerHandlers(Connection c) {
-        c.handler(RegisterRequest.class, new RegisterRequestHandler());
+        c.handler(InsertRemoteObjRequest.class, new RegisterRequestHandler());
     }
 
     /**
@@ -145,15 +143,49 @@ public class NamingService implements RemoteObjectStore,TransactionsManager {
             return Optional.empty();
     }
 
+    @Override
+    public long begin() {
+        return -1;
+    }
+
+    @Override
+    public <T extends CatalystSerializable> void heartbeat(long xid, RemoteObj ro, T logged)
+    {
+
+    }
+
+    @Override
+    public void prepare(long xid) {
+
+    }
+
+    @Override
+    public void prepared(long xid, RemoteObj ro) {
+
+    }
+
+
+    /**
+     * Send commit after prepared responses arrive from all resources.
+     */
+    private void commit() {
+
+    }
+
+    @Override
+    public void abort(long xid) {
+
+    }
+
     /**
      * TODO logging.
      * Register request handler always returns a completedFuture for now.
      */
     private class RegisterRequestHandler
-            implements Function<RegisterRequest, CompletableFuture<RegisterReply>>
+            implements Function<InsertRemoteObjRequest, CompletableFuture<InsertRemoteObjReply>>
     {
         @Override
-        public CompletableFuture<RegisterReply> apply(RegisterRequest rq)
+        public CompletableFuture<InsertRemoteObjReply> apply(InsertRemoteObjRequest rq)
         {
             String name = rq.getName();
             RemoteObj ro = rq.getRemoteObj();
@@ -165,7 +197,7 @@ public class NamingService implements RemoteObjectStore,TransactionsManager {
                 sro.add(ro);
                 store.put(name,sro);
             }
-            return CompletableFuture.completedFuture(new RegisterReply(true));
+            return CompletableFuture.completedFuture(new InsertRemoteObjReply(true));
         }
     }
 }
