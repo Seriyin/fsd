@@ -1,7 +1,5 @@
 package store;
 
-import io.atomix.catalyst.transport.Address;
-import io.atomix.catalyst.transport.Transport;
 import pt.haslab.ekit.Log;
 import util.DistObjManager;
 import util.Skeleton;
@@ -44,7 +42,7 @@ public class StoreSkeleton extends Skeleton implements Store {
     }
 
     @Override
-    public List<Book> findByAuthor(List<String> authors) {
+    public List<Book> findByAuthors(List<String> authors) {
         return sb.stream()
                  .filter(b -> !hasCommonAuthors(authors,b.getAuthors()))
                  .collect(Collectors.toList());
@@ -57,10 +55,8 @@ public class StoreSkeleton extends Skeleton implements Store {
      * @return whether there are any common authors.
      */
     private boolean hasCommonAuthors(List<String> authors, List<String> authors1) {
-        boolean hasCommon = false;
-        hasCommon = authors1.stream()
-                            .anyMatch(authors::contains);
-        return hasCommon;
+        return authors1.stream()
+                       .anyMatch(authors::contains);
     }
 
     @Override
@@ -111,5 +107,18 @@ public class StoreSkeleton extends Skeleton implements Store {
     @Override
     public List<Book> getPurchased(long cid) {
         return mb.getOrDefault(cid,new ArrayList<>());
+    }
+
+    /**
+     * Buy the current selection of books in cart.
+     *
+     * @param c Cart that contains the books.
+     *
+     * @return whether the buying operation succeeded.
+     */
+    @Override
+    public boolean buy(Cart c)
+    {
+        return false;
     }
 }

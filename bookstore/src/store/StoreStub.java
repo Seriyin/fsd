@@ -1,7 +1,6 @@
 package store;
 
 import io.atomix.catalyst.transport.Connection;
-import io.atomix.catalyst.transport.Transport;
 import util.RemoteObj;
 import util.Stub;
 
@@ -34,7 +33,7 @@ public class StoreStub extends Stub implements Store {
     }
 
     @Override
-    public List<Book> findByAuthor(List<String> authors) {
+    public List<Book> findByAuthors(List<String> authors) {
         return null;
     }
 
@@ -66,5 +65,18 @@ public class StoreStub extends Stub implements Store {
     @Override
     public List<Book> getPurchased(long cid) {
         return null;
+    }
+
+    /**
+     * Buy the current selection of books in cart.
+     *
+     * @param c Cart that contains the books.
+     *
+     * @return whether the buying operation succeeded.
+     */
+    @Override
+    public boolean buy(Cart c)
+    {
+        return false;
     }
 }
