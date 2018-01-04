@@ -1,4 +1,4 @@
-package messaging;
+package messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
@@ -15,7 +15,7 @@ public abstract class ObjRequest implements CatalystSerializable
 {
     private RemoteObj ro;
 
-    ObjRequest(RemoteObj ro) {
+    protected ObjRequest(RemoteObj ro) {
         this.ro = ro;
     }
 
@@ -23,7 +23,7 @@ public abstract class ObjRequest implements CatalystSerializable
         return ro;
     }
 
-    void setRemoteObj(RemoteObj ro) {
+    protected void setRemoteObj(RemoteObj ro) {
         this.ro = ro;
     }
 
@@ -34,6 +34,6 @@ public abstract class ObjRequest implements CatalystSerializable
 
     @Override
     public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
-        serializer.writeObject(ro);
+        serializer.writeObject(ro, buffer);
     }
 }

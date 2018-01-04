@@ -1,4 +1,4 @@
-package messaging;
+package messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
@@ -38,7 +38,7 @@ public abstract class ObjReply implements CatalystSerializable {
     public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
         if(ro.isPresent()) {
             buffer.writeByte(1);
-            serializer.writeObject(ro);
+            serializer.writeObject(ro, buffer);
         }
         else {
             buffer.writeByte(0);
