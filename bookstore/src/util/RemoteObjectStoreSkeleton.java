@@ -1,6 +1,9 @@
 package util;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Remote Object Store implementation with no excepts.
@@ -34,16 +37,14 @@ public class RemoteObjectStoreSkeleton implements RemoteObjectStore {
 
     @Override
     public boolean insertObject(String name, RemoteObj ro) {
-        boolean result = false;
+        boolean result;
         if(mp.containsKey(name)) {
-            mp.get(name).add(ro);
-            result = true;
+            result = mp.get(name).add(ro);
         }
         else {
             Set<RemoteObj> sro = new HashSet<>();
             sro.add(ro);
-            mp.put(name,sro);
-            result = true;
+            result = mp.put(name,sro)!=null;
         }
         return result;
     }
