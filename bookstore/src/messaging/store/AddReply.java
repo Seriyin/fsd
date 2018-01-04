@@ -1,13 +1,15 @@
-package messaging;
+package messaging.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
+import messaging.util.SReply;
 
 /**
  * Simple success reply to add to cart operation.
  */
-public class AddReply extends SReply {
+public class AddReply extends SReply
+{
 
     AddReply(boolean hasSucceeded) {
         super(hasSucceeded);

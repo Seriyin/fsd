@@ -1,13 +1,15 @@
-package messaging;
+package messaging.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
+import messaging.util.SReply;
 
 /**
  * Simple success reply to remove from cart operation.
  */
-public class RemoveReply extends SReply {
+public class RemoveReply extends SReply
+{
 
     RemoveReply(boolean hasSucceeded) {
         super(hasSucceeded);
