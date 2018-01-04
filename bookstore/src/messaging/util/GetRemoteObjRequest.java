@@ -1,4 +1,4 @@
-package messaging;
+package messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
@@ -8,7 +8,8 @@ import util.RemoteObj;
 /**
  * Remote object request to a naming service.
  */
-public class GetRemoteObjRequest extends ObjRequest {
+public class GetRemoteObjRequest extends ObjRequest
+{
     private String name;
     private long tag;
 
@@ -18,7 +19,7 @@ public class GetRemoteObjRequest extends ObjRequest {
         this.tag = tag;
     }
 
-    GetRemoteObjRequest(RemoteObj ro, String name) {
+    public GetRemoteObjRequest(RemoteObj ro, String name) {
         super(ro);
         this.name = name;
         this.tag = -1;
