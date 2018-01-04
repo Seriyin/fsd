@@ -1,9 +1,10 @@
 package store;
 
 import io.atomix.catalyst.transport.Connection;
-import io.atomix.catalyst.transport.Transport;
-import messaging.*;
+import messaging.store.*;
+import org.slf4j.LoggerFactory;
 import util.RemoteObj;
+import util.Server;
 import util.Stub;
 
 import java.util.ArrayList;
@@ -16,7 +17,8 @@ import java.util.List;
  * the known cart.
  */
 public class CartStub extends Stub implements Cart {
-    private List<Long> cached;
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Server.class);
+    private List<Item<Book>> cached;
 
     public CartStub(RemoteObj ro, Connection c) {
         super(ro, c);
@@ -24,117 +26,76 @@ public class CartStub extends Stub implements Cart {
     }
 
     /**
-     * Adds via isbn of the book.
+     * Sends a request to add a book to the remote cart.
      * @param b book to add.
-     * @return whether the book was successfully added to cart.
      * @see AddRequest
-     * @see AddReply
      */
     @Override
-    public boolean add(Book b)
+    public void add(Book b)
     {
-        boolean result = true;
-        if(!cached.contains(b.getISBN())) {
-            AddRequest arq = new AddRequest(getRef(), b.getISBN());
-            result = getConnection().<AddRequest, AddReply>sendAndReceive(arq)
-                                    .join()
-                                    .hasSucceeded();
-            if(result){
-                cached.add(b.getISBN());
-            }
-        }
-        return result;
+        add(b,1);
     }
 
     /**
-     * Adds via isbn of the book to the remote cart.
-     * @param isbn ISBN of the book to add.
-     * @return whether the book was successfully added to the remote cart.
+     * Sends a request to add a book to the remote cart.
+     * @param b book to add.
+     * @param qt quantity of books to add.
      * @see AddRequest
-     * @see AddReply
      */
     @Override
-    public boolean add(long isbn) {
-        boolean result = true;
-        if(!cached.contains(isbn))
-        {
-            AddRequest arq = new AddRequest(getRef(),isbn);
-            result = getConnection().<AddRequest, AddReply>sendAndReceive(arq)
-                                    .join()
-                                    .hasSucceeded();
-            if(result){
-                cached.add(isbn);
-            }
-        }
-        return result;
+    public void add(Book b, int qt)
+    {
+        AddRequest arq = new AddRequest(getRef(), b, qt);
+        getConnection().send(arq);
     }
 
     /**
-     * Removes via isbn of the book in the remote cart.
+     * Sends a request to remove book in the remote cart.
      * @param b the book to remove.
-     * @return whether the book was successfully removed from the remote cart.
      * @see RemoveRequest
-     * @see RemoveReply
      */
     @Override
-    public boolean remove(Book b)
+    public void remove(Book b)
     {
-        boolean result = true;
-        int i = cached.lastIndexOf(b.getISBN());
-        if(i!=-1){
-            RemoveRequest rrq = new RemoveRequest(getRef(),b.getISBN());
-            result = getConnection().<RemoveRequest, RemoveReply>sendAndReceive(rrq)
-                                    .join()
-                                    .hasSucceeded();
-            if(result) {
-                cached.remove(i);
-            }
-        }
-        return result;
+        remove(b,1);
     }
 
+
     /**
-     * Removes via isbn of the book in the remote cart.
-     * @param isbn ISBN of the book to remove.
-     * @return whether the book was successfully removed from the remote cart.
+     * Sends a request to remove book in the remote cart.
+     * @param b the book to remove.
+     * @param qt quantity of books to remove.
      * @see RemoveRequest
-     * @see RemoveReply
      */
     @Override
-    public boolean remove(long isbn) {
-        boolean result = true;
-        int i = cached.lastIndexOf(isbn);
-        if(i!=-1)
-        {
-            RemoveRequest rrq = new RemoveRequest(getRef(),isbn);
-            result = getConnection().<RemoveRequest, RemoveReply>sendAndReceive(rrq)
-                                    .join()
-                                    .hasSucceeded();
-            if(result) {
-                cached.remove(i);
-            }
-        }
-        return result;
+    public void remove(Book b, int qt)
+    {
+        RemoveRequest rrq = new RemoveRequest(getRef(), b, qt);
+        getConnection().send(rrq);
     }
 
+
+
     /**
-     * Attempts to buy books in the remote cart.
-     * @return whether the books were successfully purchased.
+     * Fires off a request to clear the cart.
      * @see BuyRequest
      * @see BuyReply
      */
     @Override
-    public boolean buy() {
-        boolean result = true;
-        if(!cached.isEmpty()) {
-            BuyRequest rrq = new BuyRequest(getRef());
-            result = getConnection().<BuyRequest, BuyReply>sendAndReceive(rrq)
-                                    .join()
-                                    .hasSucceeded();
-            if(result) {
-                cached.clear();
-            }
-        }
-        return result;
+    public void clear() {
+        ClearRequest rrq = new ClearRequest(getRef());
+        getConnection().send(rrq);
+    }
+
+    /**
+     * View items in cart.
+     * <p>
+     * No guarantees it is immediately coherent with remote cart.
+     * @return list of items in cart.
+     */
+    @Override
+    public List<Item<Book>> view()
+    {
+        return cached;
     }
 }

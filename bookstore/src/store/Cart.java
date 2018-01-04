@@ -1,10 +1,14 @@
 package store;
 
+import java.util.List;
+
 /**
  * The Cart interface describes operations that can be requested
  * over a Cart.
  * <p>
  * These include buying all the cart items and adding or removing from the cart.
+ * <p>
+ * Item is generic but the Cart is not so far. Would need a little refactoring.
  */
 public interface Cart {
 
@@ -12,34 +16,37 @@ public interface Cart {
     /**
      * Adds a book to the cart.
      * @param b book to add.
-     * @return whether it succeeded.
      */
-    boolean add(Book b);
+    void add(Book b);
 
     /**
-     * Adds a book to the cart.
-     * @param isbn ISBN of the book to add.
-     * @return whether it succeeded.
+     * Adds a number of copies of the book to the cart.
+     * @param b book to add.
+     * @param qt quantity to add.
      */
-    boolean add(long isbn);
+    void add(Book b, int qt);
 
     /**
      * Removes a book from the cart.
      * @param b the book to remove.
-     * @return whether it succeeded.
      */
-    boolean remove(Book b);
+    void remove(Book b);
 
     /**
-     * Removes a book from the cart.
-     * @param isbn ISBN of the book to remove.
-     * @return whether it succeeded.
+     * Removes a number of copies from a book from the cart.
+     * @param b book to remove.
+     * @param qt quantity to remove.
      */
-    boolean remove(long isbn);
+    void remove(Book b, int qt);
 
     /**
-     * Finalizes shopping by buying all books in the cart.
-     * @return whether it succeeded.
+     * Finalizes shopping by clearing all books in the cart.
      */
-    boolean buy();
+    void clear();
+
+    /**
+     * View items in cart.
+     * @return list of items in cart.
+     */
+    List<Item<Book>> view();
 }
