@@ -1,13 +1,15 @@
-package messaging;
+package messaging.bank;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
+import messaging.util.SReply;
 
 /**
  * Purchase Reply just indicates operation success.
  */
-public class PurchaseReply extends SReply {
+public class PurchaseReply extends SReply
+{
 
     public PurchaseReply(boolean hasSucceeded) {
         super(hasSucceeded);
