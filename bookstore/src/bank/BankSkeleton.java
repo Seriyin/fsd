@@ -1,17 +1,11 @@
 package bank;
 
-import io.atomix.catalyst.transport.Address;
-import io.atomix.catalyst.transport.Transport;
-import messaging.RegisterRequest;
+import messaging.util.InsertRemoteObjRequest;
 import pt.haslab.ekit.Log;
 import util.DistObjManager;
-import util.Server;
 import util.Skeleton;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Bank Skeleton implements actual bank logic against a transactional log.
@@ -19,7 +13,7 @@ import java.util.Map;
  */
 public class BankSkeleton extends Skeleton implements Bank {
     private DistObjManager dom;
-    private Map<Long,List<Payment>> mb;
+    private Map<Long,Account> mb;
     private Log payments;
 
     /**
@@ -35,7 +29,7 @@ public class BankSkeleton extends Skeleton implements Bank {
         this.dom = dom;
         setRef(dom.exportRef(this).orElse(null));
         registerHandlers();
-        dom.sendRegisterRequest(new RegisterRequest(getRef(),name));
+        dom.sendRegisterRequest(new InsertRemoteObjRequest(getRef(), name));
     }
 
 
@@ -53,6 +47,20 @@ public class BankSkeleton extends Skeleton implements Bank {
         payments.open().join();*/
     }
 
+
+    @Override
+    public boolean registerClient(String name)
+    {
+        boolean hasSucceeded = false;
+        long cid = Objects.hash(name,System.nanoTime());
+        if(!mb.containsKey(cid))
+        {
+            mb.put(cid,new Account(name, cid));
+            hasSucceeded = true;
+        }
+        return hasSucceeded;
+    }
+
     /**
      * #TODO implement registering a payment as part of a distributed transaction.
      * Registering a payment is included in a distributed transaction
@@ -64,11 +72,13 @@ public class BankSkeleton extends Skeleton implements Bank {
      * @return Success or failure.
      */
     @Override
-    public boolean register(long cid, Payment p) {
+    public boolean registerPayment(long cid, Payment p) {
         boolean hasSucceeded = false;
         if(mb.containsKey(cid))
         {
-            hasSucceeded = mb.get(cid).add(p);
+            hasSucceeded = mb.get(cid)
+                             .getPaymentHistory()
+                             .add(p);
         }
         return hasSucceeded;
     }
@@ -83,14 +93,12 @@ public class BankSkeleton extends Skeleton implements Bank {
     public List<Payment> consult(long cid) {
         List<Payment> result;
         if(mb.containsKey(cid)) {
-            result = mb.get(cid);
+            result = mb.get(cid).getPaymentHistory();
         }
         else {
             result = new ArrayList<>();
         }
         return result;
     }
-
-
 
 }
