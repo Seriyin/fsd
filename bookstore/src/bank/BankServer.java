@@ -5,13 +5,13 @@ import io.atomix.catalyst.concurrent.ThreadContext;
 import io.atomix.catalyst.serializer.Serializer;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
-import messaging.*;
-import util.DistObjManager;
+import messaging.bank.*;
+import messaging.store.BuyReply;
+import messaging.store.BuyRequest;
 import util.Server;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -30,7 +30,7 @@ public class BankServer extends Server {
      * <p>
      * Should follow bank_{name} convention but is
      * not required.
-     * @param name The name of the bank to register
+     * @param name The name of the bank to registerPayment
      */
     public BankServer(String name)
     {
@@ -89,6 +89,10 @@ public class BankServer extends Server {
         Serializer sr = getSerializer();
         sr.register(PurchaseRequest.class);
         sr.register(PurchaseReply.class);
+        sr.register(BuyRequest.class);
+        sr.register(BuyReply.class);
+        sr.register(ClientRequest.class);
+        sr.register(ClientReply.class);
         sr.register(ConsultRequest.class);
         sr.register(ConsultReply.class);
     }
@@ -102,8 +106,9 @@ public class BankServer extends Server {
     @Override
     protected void handlers(Connection c)
     {
-        c.handler(PurchaseRequest.class,new PurchaseRequestHandler());
-        c.handler(ConsultRequest.class,new ConsultRequestHandler());
+        c.handler(PurchaseRequest.class, new PurchaseRequestHandler());
+        c.handler(ConsultRequest.class, new ConsultRequestHandler());
+        c.handler(ClientRequest.class, new ClientRequestHandler());
     }
 
     /**
@@ -116,7 +121,7 @@ public class BankServer extends Server {
         @Override
         public CompletableFuture<PurchaseReply> apply(PurchaseRequest rq)
         {
-            b.register(rq.getClientID(),rq.getPayment());
+            b.registerPayment(rq.getClientID(), rq.getPayment());
             return CompletableFuture.completedFuture(new PurchaseReply(true));
         }
     }
@@ -133,5 +138,20 @@ public class BankServer extends Server {
             return CompletableFuture.completedFuture(new ConsultReply(lp));
         }
     }
+
+    /**
+     * ClientRequest registers a new client into the bank.
+     */
+    private class ClientRequestHandler
+            implements Function<ClientRequest, CompletableFuture<ClientReply>>
+    {
+        @Override
+        public CompletableFuture<ClientReply> apply(ClientRequest rq)
+        {
+            b.registerClient(rq.getName());
+            return CompletableFuture.completedFuture(new ClientReply(true));
+        }
+    }
+
 
 }
