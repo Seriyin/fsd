@@ -1,10 +1,11 @@
-package messaging.store;
+package pt.um.bookstore.messaging.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import messaging.util.ListReply;
-import store.Book;
+import pt.um.bookstore.messaging.util.ListMessage;
+import pt.um.bookstore.messaging.util.Reply;
+import pt.um.bookstore.store.Book;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * <p>
  * Might be empty, or single element.
  */
-public class FindReply extends ListReply<Book>
+public class FindReply extends ListMessage<Book> implements Reply
 {
     public FindReply(List<Book> l)
     {
