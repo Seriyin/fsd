@@ -63,7 +63,7 @@ Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribu�
 \end{figure}
 \newpage
 
-\paragraph{}Como mostra a figura, o nosso sistema está dependente de um processo que atua como serviço de nomes e gestor de transações conhecido por todos os outros processos.
+\paragraph{}Como mostra a figura, o sistema envisionado está dependente de um processo que atua como serviço de nomes e gestor de transações conhecido por todos os outros processos.
 
 \paragraph{}Para garantir a consistência do sistema, caso este serviço falhe, ele mantém logs que refletem o seu estado atual, para poder ser reiniciado num estado são.
 
@@ -73,7 +73,7 @@ Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribu�
 
 \paragraph{}Para permitir uma configuração de rede razoavelmente dinâmica torna-se necessário ter um serviço de nomes capaz de registar servidores (quer de bancos quer de lojas) ativos, prontos para servir os clientes.
 
-\paragraph{}Como é necessário também ter um coordenador de transações para implementar o \textit{Two-phase commit}, o serviço de nomes tratará também de o fazer no mesmo processo.
+\paragraph{}Como é necessário também ter um coordenador de transações para implementar o \textit{Two-phase commit}, o serviço de nomes tratará também de o fazer no mesmo processo, para simplificar.
 
 \section{Modularidade e classes auxiliares}
 
@@ -81,6 +81,38 @@ Fundamentos de Sistemas Distribuídos\\Livraria e Banco - Transações distribu�
 } e exportação de \textit{Servants} (usou-se o termo Skeleton para estes na base de código); e de gestão de conexões (Server e Stub), encapsuladoras de funções comuns de gestão de ligações, registo de \textit{handlers} e registo de \textit{callbacks}.
 
 \paragraph{} Estas classes abstratas tentam deferir os detalhes mais específicos (classes concretas envolvidas) para implementações mais concretas ligadas à lógica de negócio dedicada às livrarias e bancos. Tentam ser o mais \textit{Plug 'n Play} possível, seguindo uma abordagem de inversão de controlo.
+
+\section{Handlers e Pedidos}
+
+\paragraph{} Na abordagem orientada ao evento proporcionada pelo framework \textit{Catalyst}, existem adicionalmente dois recursos principais envolvidos na distribuição transparente.
+
+\paragraph{} Os handlers permitem atualizar o estado de acordo com pedidos que cheguem ao servidor em questão (quer seja loja, banco, serviço de nomes ou gestor de transações) multiplexando muitas ligações e pedidos em poucos recursos físicos (CPUs, threads). Em seguida podem ou não responder a estes pedidos com respostas, que outros serviços interpretarão como pedidos.
+
+\paragraph{} Fazem então estes dois componentes uma parte principal deste projeto. 
+
+\paragraph{} Cada um dos quatro serviços acima referidos contém uma quantidade considerável destes dois recursos disponíveis para poder responder às interfaces genéricas expostas e a eles associadas.
+
+\paragraph{} Assim, um cliente que não possui um destes serviços embebido na sua máquina ou no seu processo, vê uma interface simples e transparente à distribuição, estando esta escondida nestes handlers.
+
+\section{Gargalos}
+
+\paragraph{} Para simplificar este projeto e algumas das suas principais interfaces, optou-se por adoptar um comportamento síncrono no que toca à troca de mensagens para invocação remota, o que diminui bastante a performance potencial do sistema, pelo que a solução a este problema passaria por um sistema bem mais complexo de \textit{caching} de futuras respostas com recurso a técnicas de tratamento de operações asíncronas, mas que complicaria consideravelmente estas interfaces.
+
+\paragraph{} Como os serviços oferecidos são bastante modulares, os gargalos são relativamente mitigados aumentando simplesmente a distribuição, assumindo que as mensagens são pequenas em tamanho, e a rede relativamente robusta.
+
+\paragraph{} Assim, as duas principais simplificações, utilização de contextos de execução de uma única thread e interfaces síncronas no que diz respeito a mensagens \textit{Stub<->Skeleton}, figuram-se aceitáveis face aos ganhos em clareza e transparência.
+
+\section{Por fazer}
+
+\paragraph{} O cliente destes serviços ficou inteiramente por fazer, assim como diversos \textit{handlers} e alguns \textit{stubs} como o da loja por falta de tempo.
+
+\paragraph{} Visto esta arquitetura ser um pouco complexa, alguns pedidos e respostas não são também tratados com todo o rigor e tratamento de exceções.
+
+\paragraph{} Alguns outros pedidos, relacionados com a compra também ficaram por fazer.
+
+\paragraph{} Uma implementação do carrinho, com recurso ao padrão da fábrica, ficou também por fazer.
+
+\paragraph{} Este projeto carece também de exemplos de utilização da API, se bem que esta se encontra devidamente documentada.
 
 \end{document}
 
