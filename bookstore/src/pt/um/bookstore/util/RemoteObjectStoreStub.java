@@ -1,10 +1,10 @@
-package util;
+package pt.um.bookstore.util;
 
 import io.atomix.catalyst.transport.Connection;
-import messaging.util.GetRemoteObjReply;
-import messaging.util.GetRemoteObjRequest;
-import messaging.util.InsertRemoteObjReply;
-import messaging.util.InsertRemoteObjRequest;
+import pt.um.bookstore.messaging.util.GetRemoteObjReply;
+import pt.um.bookstore.messaging.util.GetRemoteObjRequest;
+import pt.um.bookstore.messaging.util.InsertRemoteObjReply;
+import pt.um.bookstore.messaging.util.InsertRemoteObjRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class RemoteObjectStoreStub extends Stub implements RemoteObjectStore {
                 ro = Optional.of(cache);
             }
             else {
-                GetRemoteObjRequest rq = new GetRemoteObjRequest(getRef(),name,tag);
+                GetRemoteObjRequest rq = new GetRemoteObjRequest(getRef(), name, tag);
                 ro = getConnection().<GetRemoteObjRequest, GetRemoteObjReply>sendAndReceive(rq)
                                     .join().getRemoteObj();
             }

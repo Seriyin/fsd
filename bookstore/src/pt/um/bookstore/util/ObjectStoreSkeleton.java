@@ -1,6 +1,8 @@
-package util;
+package pt.um.bookstore.util;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * ObjectStoreSkeleton implements the ObjectStore interface with no excepts.

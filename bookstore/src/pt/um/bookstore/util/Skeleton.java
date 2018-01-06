@@ -1,4 +1,4 @@
-package util;
+package pt.um.bookstore.util;
 
 /**
  * Skeleton contains {@link RemoteObj} management methods.

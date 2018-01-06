@@ -1,4 +1,4 @@
-package store;
+package pt.um.bookstore.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;

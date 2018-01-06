@@ -1,15 +1,17 @@
-package util;
+package pt.um.bookstore.util;
 
-import bank.Bank;
-import bank.BankStub;
 import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import store.Cart;
-import store.CartStub;
-import store.Store;
-import store.StoreStub;
+import pt.um.bookstore.bank.Bank;
+import pt.um.bookstore.bank.BankStub;
+import pt.um.bookstore.store.Cart;
+import pt.um.bookstore.store.CartStub;
+import pt.um.bookstore.store.Store;
+import pt.um.bookstore.store.StoreStub;
+import pt.um.bookstore.transactions.TransactionsManager;
+import pt.um.bookstore.transactions.TransactionsManagerStub;
 
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Class responsible for figuring out object type, generating references
- * and inserting the objects into the exported objects store.
+ * and inserting the objects into the exported objects pt.um.bookstore.store.
  * @see RemoteObj
  * @see DistObjManager
  */
@@ -41,7 +43,7 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
     /**
      * Imports a stub from a given remote object.
      * <p>
-     * Stubs are infused with the calling processes network info,
+     * Stubs are infused with the acquired network info in the remote reference,
      * in order to delegate actual method invocations through RMI
      * transparently.
      * @param b The object reference
@@ -55,19 +57,19 @@ final class RemoteObjFactoryImpl implements RemoteObjFactory {
         String cls = b.getCls();
         Optional<? extends Stub> result;
         if(cls.equals(Cart.class.getName())) {
-            result = Optional.of(new CartStub(b,c));
+            result = Optional.of(new CartStub(b, c));
         }
         else if(cls.equals(Store.class.getName())) {
-            result = Optional.of(new StoreStub(b,c));
+            result = Optional.of(new StoreStub(b, c));
         }
         else if(cls.equals(RemoteObjectStore.class.getName())) {
             result = Optional.of(new RemoteObjectStoreStub(b,c));
         }
         else if(cls.equals(Bank.class.getName())) {
-            result = Optional.of(new BankStub(b,c));
+            result = Optional.of(new BankStub(b, c));
         }
         else if(cls.equals(TransactionsManager.class.getName())) {
-            result = Optional.of(new TransactionsManagerStub(b,c));
+            result = Optional.of(new TransactionsManagerStub(b, c));
         }
         else if(cls.equals(RemoteObjectStore.class.getName()))
         {

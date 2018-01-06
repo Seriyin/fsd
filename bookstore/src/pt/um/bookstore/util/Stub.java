@@ -1,4 +1,4 @@
-package util;
+package pt.um.bookstore.util;
 
 import io.atomix.catalyst.concurrent.ThreadContext;
 import io.atomix.catalyst.transport.Client;

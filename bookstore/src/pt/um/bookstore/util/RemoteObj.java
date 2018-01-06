@@ -1,4 +1,4 @@
-package util;
+package pt.um.bookstore.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
@@ -11,9 +11,6 @@ import java.util.Objects;
 /**
  * Stands in for an actual Object with an object handler comprised of the host machine, an
  * unique numeric tag and the object's classname.
- * @author Andre Diogo
- * @author Diogo Pimenta
- * @version 1.1
  */
 public final class RemoteObj implements CatalystSerializable {
     private Address address;

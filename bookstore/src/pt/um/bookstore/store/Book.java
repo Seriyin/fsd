@@ -1,11 +1,11 @@
-package store;
+package pt.um.bookstore.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.serializer.Serializer;
-import util.DistObjManager;
-import util.Skeleton;
+import pt.um.bookstore.util.DistObjManager;
+import pt.um.bookstore.util.Skeleton;
 
 import java.util.List;
 import java.util.Objects;

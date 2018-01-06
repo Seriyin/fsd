@@ -4,4 +4,4 @@
  *
  * @author André Diogo, {@literal <a75505@alunos.uminho.pt>}
  */
-package messaging;
+package pt.um.bookstore.messaging;

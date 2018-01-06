@@ -1,7 +1,9 @@
-package util;
+package pt.um.bookstore.util;
 
 import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.transport.Connection;
+import pt.um.bookstore.transactions.TransactionsManager;
+import pt.um.bookstore.transactions.TransactionsManagerStub;
 
 import java.util.Optional;
 

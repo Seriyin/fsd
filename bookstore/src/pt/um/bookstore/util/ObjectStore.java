@@ -1,4 +1,4 @@
-package util;
+package pt.um.bookstore.util;
 
 import java.util.Optional;
 

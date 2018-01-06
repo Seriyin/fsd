@@ -1,9 +1,9 @@
-package messaging.util;
+package pt.um.bookstore.messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import util.RemoteObj;
+import pt.um.bookstore.util.RemoteObj;
 
 /**
  * Insert remote reference into a remote object store.

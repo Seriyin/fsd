@@ -1,4 +1,4 @@
-package util;
+package pt.um.bookstore.util;
 
 import io.atomix.catalyst.concurrent.SingleThreadContext;
 import io.atomix.catalyst.concurrent.ThreadContext;
@@ -7,10 +7,10 @@ import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
 import io.atomix.catalyst.transport.netty.NettyTransport;
-import messaging.util.InsertRemoteObjReply;
-import messaging.util.InsertRemoteObjRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.um.bookstore.messaging.util.InsertRemoteObjReply;
+import pt.um.bookstore.messaging.util.InsertRemoteObjRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +19,11 @@ import java.util.Random;
 
 /**
  * Server is an abstract class that encapsulates Catalyst context and network behaviour.
- *
- * Server is immutable.
+ * <p>
+ * Server is immutable and assumes the existence of the NamingService at the known
+ * 10000 port.
+ * <p>
+ * All servers in this architecture register into the NamingService by default.
  */
 public abstract class Server {
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
@@ -63,7 +66,7 @@ public abstract class Server {
      * exports or imports.
      * <p>
      * All server classes assume they will talk to a naming service through
-     * {@link messaging.util.InsertRemoteObjRequest} and {@link messaging.util.InsertRemoteObjReply}
+     * {@link InsertRemoteObjRequest} and {@link InsertRemoteObjReply}
      * which are registered in the serializer by default.
      * @param name The name through which to registerPayment the server in the naming service.<p>
      *             Should be descriptive of function and will be bagged with other servers registering under the same

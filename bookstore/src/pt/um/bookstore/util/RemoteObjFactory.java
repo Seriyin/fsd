@@ -1,9 +1,8 @@
-package util;
+package pt.um.bookstore.util;
 
 
 import io.atomix.catalyst.transport.Connection;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
