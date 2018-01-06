@@ -1,10 +1,11 @@
-package messaging.bank;
+package pt.um.bookstore.messaging.bank;
 
-import bank.Payment;
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import messaging.util.ListReply;
+import pt.um.bookstore.bank.Payment;
+import pt.um.bookstore.messaging.util.ListMessage;
+import pt.um.bookstore.messaging.util.Reply;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * <p>
  * Is immutable and does not mutate the underlying list.
  */
-public class ConsultReply extends ListReply<Payment>
+public class ConsultReply extends ListMessage<Payment> implements Reply
 {
 
     /**
