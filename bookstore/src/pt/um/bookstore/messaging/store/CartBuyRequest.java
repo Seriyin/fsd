@@ -5,7 +5,7 @@ package pt.um.bookstore.messaging.store;
  */
 public class CartBuyRequest
 {
-    public CartBuyRequest(long cid)
+    public CartBuyRequest()
     {
     }
 }
