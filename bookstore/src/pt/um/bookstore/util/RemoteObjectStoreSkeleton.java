@@ -1,15 +1,34 @@
-package util;
+package pt.um.bookstore.util;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import pt.haslab.ekit.Log;
+
+import java.util.*;
 
 /**
  * Remote Object Store implementation with no excepts.
  */
-public class RemoteObjectStoreSkeleton implements RemoteObjectStore {
-    private Map<String,Set<RemoteObj>> mp;
+public class RemoteObjectStoreSkeleton extends Skeleton implements RemoteObjectStore {
+    private final Map<String,Set<RemoteObj>> mp;
+    private final DistObjManager dom;
+    private final Log log;
+
+    public RemoteObjectStoreSkeleton(DistObjManager dom)
+    {
+        mp = new HashMap<>();
+        this.dom = dom;
+        log = new Log("naming");
+        openLog();
+        setRef(dom.exportRef(this).orElse(null));
+    }
+
+    public void openLog()
+    {
+        //Set pt.um.bookstore.messaging for NamingService's log.
+        log.handler(long.class,(j,m) -> {});
+        //Wait till log is consistent.
+        log.open().join();
+
+    }
 
     @Override
     public Optional<RemoteObj> getObject(String name, long tag) {
