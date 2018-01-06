@@ -1,14 +1,15 @@
-package store;
+package pt.um.bookstore.store;
 
 import io.atomix.catalyst.transport.Connection;
-import util.RemoteObj;
-import util.Stub;
+import pt.um.bookstore.util.NamingService;
+import pt.um.bookstore.util.RemoteObj;
+import pt.um.bookstore.util.Stub;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * TODO Implement consultations.
+ * TODO Implement stub.
  */
 public class StoreStub extends Stub implements Store {
 
@@ -63,20 +64,52 @@ public class StoreStub extends Stub implements Store {
     }
 
     @Override
-    public List<Book> getPurchased(long cid) {
+    public List<Purchase> getPurchased(long cid) {
         return null;
     }
 
     /**
-     * Buy the current selection of books in cart.
+     * Lists a purchases by a client in the store.
      *
-     * @param c Cart that contains the books.
+     * @param cid  The client's id.
+     * @param page Index of purchase in descending order based on time.
      *
-     * @return whether the buying operation succeeded.
+     * @return List containing all the books purchased page purchases ago.
      */
     @Override
-    public boolean buy(Cart c)
+    public Optional<Purchase> getPagePurchase(long cid, int page)
+    {
+        return Optional.empty();
+    }
+
+    /**
+     * Add a new client account in the store.
+     *
+     * @param user    A unique username.
+     * @param bank    An existing bank known by a {@link NamingService}.
+     * @param bankcid The client id in that pt.um.bookstore.bank.
+     *
+     * @return whether the account was successfully created.
+     */
+    @Override
+    public boolean addClientAccount(String user, String bank, long bankcid)
     {
         return false;
     }
+
+    /**
+     * Add a rebuilt from log account to the store.
+     *
+     * @param ac Account to add.
+     *
+     * @return Whether the add operation was successful.
+     */
+    @Override
+    public boolean addClientAccount(Account ac)
+    {
+        return false;
+    }
+
+
+
 }
