@@ -1,10 +1,9 @@
-package messaging.util;
+package pt.um.bookstore.messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
-import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.serializer.Serializer;
-import util.RemoteObj;
+import pt.um.bookstore.util.RemoteObj;
 
 import java.util.Optional;
 
@@ -12,7 +11,8 @@ import java.util.Optional;
 /**
  * ObjReply contains the remote reference of the object needed.
  */
-public abstract class ObjReply implements CatalystSerializable {
+public abstract class ObjReply implements Reply
+{
     private Optional<RemoteObj> ro;
 
     ObjReply(Optional<RemoteObj> ro) {
@@ -23,7 +23,7 @@ public abstract class ObjReply implements CatalystSerializable {
         return ro;
     }
 
-    @Override
+
     public void readObject(BufferInput<?> buffer, Serializer serializer) {
         if(buffer.readByte()==1)
         {
@@ -34,7 +34,7 @@ public abstract class ObjReply implements CatalystSerializable {
         }
     }
 
-    @Override
+
     public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
         if(ro.isPresent()) {
             buffer.writeByte(1);

@@ -1,14 +1,14 @@
-package messaging.util;
+package pt.um.bookstore.messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
-import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.serializer.Serializer;
 
 /**
  * Reply which contains a boolean indicating operation success.
  */
-public abstract class SReply implements CatalystSerializable {
+public abstract class SReply implements Reply
+{
     private boolean hasSucceeded;
 
     protected SReply(boolean hasSucceeded){
