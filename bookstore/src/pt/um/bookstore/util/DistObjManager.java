@@ -1,10 +1,10 @@
-package util;
+package pt.um.bookstore.util;
 
 import io.atomix.catalyst.transport.Address;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
-import messaging.util.InsertRemoteObjReply;
-import messaging.util.InsertRemoteObjRequest;
+import pt.um.bookstore.messaging.util.InsertRemoteObjReply;
+import pt.um.bookstore.messaging.util.InsertRemoteObjRequest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
+ * TODO store and manage connections.
  * Each process needs to manage its available distributed objects, as well as
  * leases on remote objects. This class is in charge of this.
  * Imports and Exports RemoteObjects via a RemoteObjFactoryImpl.
@@ -23,6 +24,8 @@ public final class DistObjManager implements Importer,Exporter {
     private RemoteObjFactory rof;
     private ObjectStore<Object> objstr;
     private Map<Address, Connection> cm;
+    private Connection transactionManager;
+    private Connection remoteObjectStore;
     private Transport t;
     private List<Address> known;
     private Address me;
@@ -62,11 +65,16 @@ public final class DistObjManager implements Importer,Exporter {
         this.me = me;
         known = new ArrayList<>();
         known.add(new Address("127.0.0.1",10000));
+        this.t = t;
         objstr = new ObjectStoreSkeleton<>();
         cm = new HashMap<>();
         rof = new RemoteObjFactoryImpl(me);
     }
 
+    public Connection getConnection(Address address)
+    {
+        return cm.getOrDefault(address,null);
+    }
 
     /**
      * TODO Reference counting and connection handling also needs to be done.
@@ -148,7 +156,7 @@ public final class DistObjManager implements Importer,Exporter {
     }
 
     /**
-     * TODO Should start a lease on the remote object store.
+     * TODO Should start a lease on the remote object pt.um.bookstore.store.
      * Send a register request to the first known address, which defaults to
      * the pre-established naming service (canonically localhost:10000).
      * <p>
@@ -158,11 +166,15 @@ public final class DistObjManager implements Importer,Exporter {
      * Does not require a special handler to be registered.
      * Will use {@link Connection#sendAndReceive(Object)}
      * @param rq The request to send.
-     * @throws RuntimeException
+     * @throws RuntimeException if it fails to register in naming service.
      */
     public void sendRegisterRequest(InsertRemoteObjRequest rq) {
-        t.client().connect(known.get(0))
-                  .thenAccept(c -> syncedRegistration(c,rq));
+        Address k = known.get(0);
+        Connection cn = t.client().connect(k).join();
+        cm.put(k,cn);
+        transactionManager = cn;
+        remoteObjectStore = cn;
+        syncedRegistration(cn,rq);
     }
 
     /**
@@ -171,7 +183,7 @@ public final class DistObjManager implements Importer,Exporter {
      * If it fails throws unchecked exception.
      * @param connection Connection to use for sending and receiving.
      * @param rq The Request to send.
-     * @throws RuntimeException
+     * @throws RuntimeException if it fails to register in naming service.
      */
     private void syncedRegistration(Connection connection, InsertRemoteObjRequest rq) {
         boolean hasSucceeded = false;
@@ -180,8 +192,17 @@ public final class DistObjManager implements Importer,Exporter {
             hasSucceeded = r.join().hasSucceeded();
         }
         if (!hasSucceeded) {
-            throw new RuntimeException("Failed to registerPayment at naming service");
+            throw new RuntimeException("Failed to register at naming service");
         }
     }
 
+    public Connection getTransactionsManager()
+    {
+        return transactionManager;
+    }
+
+    public Connection getRemoteObjectStore()
+    {
+        return remoteObjectStore;
+    }
 }
