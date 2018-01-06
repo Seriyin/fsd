@@ -1,4 +1,4 @@
-package store;
+package pt.um.bookstore.store;
 
 import java.util.List;
 
@@ -49,4 +49,9 @@ public interface Cart {
      * @return list of items in cart.
      */
     List<Item<Book>> view();
+
+    /**
+     * Buy items in cart.
+     */
+    void buy();
 }
