@@ -19,7 +19,7 @@ public class CartStub extends Stub implements Cart {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Server.class);
     private List<Item<Book>> cached;
 
-    public CartStub(RemoteObj ro, Connection c, Store s, long cid)
+    public CartStub(RemoteObj ro, Connection c)
     {
         super(ro, c);
         cached = null;
