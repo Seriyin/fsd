@@ -1,13 +1,12 @@
-package store;
+package pt.um.bookstore.store;
 
 import io.atomix.catalyst.transport.Connection;
-import messaging.store.*;
 import org.slf4j.LoggerFactory;
-import util.RemoteObj;
-import util.Server;
-import util.Stub;
+import pt.um.bookstore.messaging.store.*;
+import pt.um.bookstore.util.RemoteObj;
+import pt.um.bookstore.util.Server;
+import pt.um.bookstore.util.Stub;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,9 +19,10 @@ public class CartStub extends Stub implements Cart {
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(Server.class);
     private List<Item<Book>> cached;
 
-    public CartStub(RemoteObj ro, Connection c) {
+    public CartStub(RemoteObj ro, Connection c, Store s, long cid)
+    {
         super(ro, c);
-        cached = new ArrayList<>();
+        cached = null;
     }
 
     /**
@@ -96,6 +96,24 @@ public class CartStub extends Stub implements Cart {
     @Override
     public List<Item<Book>> view()
     {
-        return cached;
+        List<Item<Book>> result;
+        if(cached != null)
+            result = cached;
+        else {
+            result = getConnection().<ViewRequest,ViewReply>
+                                           sendAndReceive(new ViewRequest(getRef()))
+                                    .join()
+                                    .getList();
+        }
+        return result;
+    }
+
+    /**
+     * Buy items in cart.
+     */
+    @Override
+    public void buy()
+    {
+        getConnection().send(new CartBuyRequest());
     }
 }
