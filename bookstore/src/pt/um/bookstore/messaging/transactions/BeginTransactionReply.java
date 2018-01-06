@@ -1,20 +1,20 @@
-package messaging.util;
+package pt.um.bookstore.messaging.transactions;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
-import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.serializer.Serializer;
+import pt.um.bookstore.messaging.util.TagReply;
 
 /**
  * Reply with transaction id.
  */
-public class BeginTransactionReply implements CatalystSerializable
+public class BeginTransactionReply extends TagReply
 {
     private long xid;
 
     BeginTransactionReply(long xid)
     {
-        this.xid = xid;
+        super(xid);
     }
 
     public long getXID()
@@ -25,12 +25,12 @@ public class BeginTransactionReply implements CatalystSerializable
     @Override
     public void writeObject(BufferOutput<?> buffer, Serializer serializer)
     {
-        buffer.writeLong(xid);
+        super.writeObject(buffer, serializer);
     }
 
     @Override
     public void readObject(BufferInput<?> buffer, Serializer serializer)
     {
-        xid = buffer.readLong();
+        super.readObject(buffer,serializer);
     }
 }
