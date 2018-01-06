@@ -1,17 +1,26 @@
-package store;
+package pt.um.bookstore.store;
 
 import io.atomix.catalyst.concurrent.ThreadContext;
+import io.atomix.catalyst.serializer.Serializer;
 import io.atomix.catalyst.transport.Connection;
 import io.atomix.catalyst.transport.Transport;
-import util.DistObjManager;
-import util.RemoteObjectStore;
-import util.Server;
+import pt.um.bookstore.handlers.store.BuyRequestHandler;
+import pt.um.bookstore.handlers.store.FindRequestHandler;
+import pt.um.bookstore.messaging.store.*;
+import pt.um.bookstore.util.DistObjManager;
+import pt.um.bookstore.util.RemoteObjectStore;
+import pt.um.bookstore.util.Server;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * StoreServer class contains the main logic to boot up a process in an unknown
- * network topology. This server will serve a book store.
+ * network topology. This server will serve a book pt.um.bookstore.store.
  */
-public class StoreServer extends Server {
+public class StoreServer extends Server
+{
     private Store store;
     private RemoteObjectStore objstore;
     private DistObjManager dom;
@@ -23,7 +32,7 @@ public class StoreServer extends Server {
      * <p>
      * Should follow store_{name} convention but is
      * not required.
-     * @param name The name of the store to register
+     * @param name The name of the store to registerPayment
      */
     protected StoreServer(String name) {
         super(name);
@@ -57,30 +66,41 @@ public class StoreServer extends Server {
      */
     @Override
     protected void execute() {
-        tc.execute(() -> {
-/*
-        cl.handler(Request.class, (j,m)-> {
-                // message handler
-            });
-*/
-        });
+        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            while(!bf.readLine().equals("quit"));
+        }
+        catch (IOException e) {
+            //ups
+        }
     }
 
     /**
-     * TODO set handlers.
+     * TODO set pt.um.bookstore.handlers.
      * @param c The open {@link Transport#server()} connection.
      */
     @Override
     protected void handlers(Connection c) {
-
+        c.handler(FindRequest.class, new FindRequestHandler(store));
+        c.handler(BuyRequest.class, new BuyRequestHandler(store));
     }
 
     /**
-     * TODO register serializables.
+     * TODO registerPayment serializables.
      */
     @Override
     protected void registerSerializables() {
-
+        Serializer sr = getSerializer();
+        sr.register(AddReply.class);
+        sr.register(AddRequest.class);
+        sr.register(BuyReply.class);
+        sr.register(BuyRequest.class);
+        sr.register(ClearRequest.class);
+        sr.register(ClearReply.class);
+        sr.register(FindRequest.class);
+        sr.register(FindReply.class);
+        sr.register(RemoveRequest.class);
+        sr.register(RemoveReply.class);
     }
 
 }
