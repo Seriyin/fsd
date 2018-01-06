@@ -1,10 +1,11 @@
-package messaging.util;
+package pt.um.bookstore.messaging.transactions;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.CatalystSerializable;
 import io.atomix.catalyst.serializer.Serializer;
-import util.RemoteObj;
+import pt.um.bookstore.messaging.util.ObjRequest;
+import pt.um.bookstore.util.RemoteObj;
 
 /**
  * Heartbeat request is involved in discovery phase of the transaction.

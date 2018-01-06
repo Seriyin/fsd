@@ -1,16 +1,16 @@
-package messaging.store;
+package pt.um.bookstore.messaging.bank;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import messaging.util.SReply;
+import pt.um.bookstore.messaging.util.SReply;
 
 /**
- * Clear reply is another success or fail reply.
+ * Client reply is yet another success of fail reply.
  */
-public class ClearReply extends SReply
+public class ClientReply extends SReply
 {
-    ClearReply(boolean hasSucceeded)
+    public ClientReply(boolean hasSucceeded)
     {
         super(hasSucceeded);
     }

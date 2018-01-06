@@ -1,9 +1,9 @@
-package bank;
+package pt.um.bookstore.bank;
 
-import messaging.util.InsertRemoteObjRequest;
 import pt.haslab.ekit.Log;
-import util.DistObjManager;
-import util.Skeleton;
+import pt.um.bookstore.messaging.util.InsertRemoteObjRequest;
+import pt.um.bookstore.util.DistObjManager;
+import pt.um.bookstore.util.Skeleton;
 
 import java.util.*;
 

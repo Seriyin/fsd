@@ -1,9 +1,9 @@
-package bank;
+package pt.um.bookstore.bank;
 
 import io.atomix.catalyst.transport.Connection;
-import messaging.bank.*;
-import util.RemoteObj;
-import util.Stub;
+import pt.um.bookstore.messaging.bank.*;
+import pt.um.bookstore.util.RemoteObj;
+import pt.um.bookstore.util.Stub;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * #TODO meaningful caching.
  * <p>
- * Sends requests to the actual underlying bank.
+ * Sends requests to the actual bank.
  * <p>
  * Acts synchronously to keep interface standard and
  * make distributed behaviour transparent.

@@ -1,37 +1,27 @@
-package messaging.bank;
+package pt.um.bookstore.messaging.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import messaging.util.ObjRequest;
-import util.RemoteObj;
-
+import pt.um.bookstore.messaging.util.SReply;
 
 /**
- * ConsultRequest needs only the bank remote reference and a client id.
+ * Simple success reply to remove from cart operation.
  */
-public class ConsultRequest extends ObjRequest
+public class RemoveReply extends SReply
 {
-    private long cid;
 
-    public ConsultRequest(RemoteObj ro, long cid) {
-        super(ro);
-        this.cid = cid;
+    RemoveReply(boolean hasSucceeded) {
+        super(hasSucceeded);
     }
 
     @Override
     public void readObject(BufferInput<?> buffer, Serializer serializer) {
         super.readObject(buffer, serializer);
-        cid = buffer.readLong();
     }
 
     @Override
     public void writeObject(BufferOutput<?> buffer, Serializer serializer) {
         super.writeObject(buffer, serializer);
-        buffer.writeLong(cid);
-    }
-
-    public long getClientID() {
-        return cid;
     }
 }

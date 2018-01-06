@@ -1,4 +1,4 @@
-package bank;
+package pt.um.bookstore.bank;
 
 import java.util.List;
 

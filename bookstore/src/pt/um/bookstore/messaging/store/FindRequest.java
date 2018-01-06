@@ -1,10 +1,10 @@
-package messaging.store;
+package pt.um.bookstore.messaging.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import messaging.util.ObjRequest;
-import util.RemoteObj;
+import pt.um.bookstore.messaging.util.ObjRequest;
+import pt.um.bookstore.util.RemoteObj;
 
 import java.util.ArrayList;
 import java.util.List;

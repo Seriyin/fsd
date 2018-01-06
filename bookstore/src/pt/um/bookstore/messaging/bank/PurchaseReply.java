@@ -1,9 +1,9 @@
-package messaging.bank;
+package pt.um.bookstore.messaging.bank;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import messaging.util.SReply;
+import pt.um.bookstore.messaging.util.SReply;
 
 /**
  * Purchase Reply just indicates operation success.

@@ -1,9 +1,9 @@
-package messaging.util;
+package pt.um.bookstore.messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import util.RemoteObj;
+import pt.um.bookstore.util.RemoteObj;
 
 import java.util.Optional;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 public class GetRemoteObjReply extends ObjReply
 {
-    GetRemoteObjReply(Optional<RemoteObj> ro) {
+    public GetRemoteObjReply(Optional<RemoteObj> ro) {
         super(ro);
     }
 

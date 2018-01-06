@@ -1,20 +1,20 @@
-package messaging.util;
+package pt.um.bookstore.messaging.store;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import util.RemoteObj;
+import pt.um.bookstore.messaging.util.ObjRequest;
+import pt.um.bookstore.util.RemoteObj;
 
 /**
- * Request to begin a transaction from host at the provided remote reference.
+ * Clear request is a request to clear a remote cart.
  */
-public class BeginTransactionRequest extends ObjRequest
+public class ClearRequest extends ObjRequest
 {
-    public BeginTransactionRequest(RemoteObj ref)
+    public ClearRequest(RemoteObj ro)
     {
-        super(ref);
+        super(ro);
     }
-
     @Override
     public void readObject(BufferInput<?> buffer, Serializer serializer)
     {

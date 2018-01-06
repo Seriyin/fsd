@@ -1,4 +1,4 @@
-package bank;
+package pt.um.bookstore.bank;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;

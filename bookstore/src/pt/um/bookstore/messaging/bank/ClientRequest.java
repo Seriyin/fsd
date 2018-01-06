@@ -1,39 +1,40 @@
-package messaging.util;
+package pt.um.bookstore.messaging.bank;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import util.RemoteObj;
+import pt.um.bookstore.messaging.util.ObjRequest;
+import pt.um.bookstore.util.RemoteObj;
 
 /**
- * Request sent by a resource indicating it's prepared to commit active transaction.
+ * Request to register a client in a bank.
  */
-public class PreparedRequest extends ObjRequest
+public class ClientRequest extends ObjRequest
 {
-    private long xid;
+    private String name;
 
-    public PreparedRequest(long xid, RemoteObj ro)
+    public ClientRequest(RemoteObj ro, String name)
     {
         super(ro);
-        this.xid = xid;
+        this.name = name;
     }
 
-    public long getXID()
+    public String getName()
     {
-        return xid;
+        return name;
     }
 
     @Override
     public void writeObject(BufferOutput<?> buffer, Serializer serializer)
     {
         super.writeObject(buffer, serializer);
-        buffer.writeLong(xid);
+        buffer.writeString(name);
     }
 
     @Override
     public void readObject(BufferInput<?> buffer, Serializer serializer)
     {
         super.readObject(buffer, serializer);
-        xid = buffer.readLong();
+        name = buffer.readString();
     }
 }

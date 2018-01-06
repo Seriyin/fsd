@@ -1,13 +1,13 @@
-package messaging.bank;
+package pt.um.bookstore.messaging.bank;
 
-import bank.Item;
-import bank.Payment;
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import messaging.util.ObjRequest;
-import store.Book;
-import util.RemoteObj;
+import pt.um.bookstore.bank.Item;
+import pt.um.bookstore.bank.Payment;
+import pt.um.bookstore.messaging.util.ObjRequest;
+import pt.um.bookstore.store.Book;
+import pt.um.bookstore.util.RemoteObj;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class PurchaseRequest extends ObjRequest
     private Payment p;
     private long cid;
 
-    public PurchaseRequest(RemoteObj ro, long cid, List<store.Item<Book>> bl) {
+    public PurchaseRequest(RemoteObj ro, long cid, List<pt.um.bookstore.store.Item<Book>> bl) {
         super(ro);
         this.p = new Payment(bl.stream()
                                .collect(ArrayList::new,
