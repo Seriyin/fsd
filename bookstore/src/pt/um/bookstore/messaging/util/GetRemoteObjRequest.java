@@ -1,9 +1,9 @@
-package messaging.util;
+package pt.um.bookstore.messaging.util;
 
 import io.atomix.catalyst.buffer.BufferInput;
 import io.atomix.catalyst.buffer.BufferOutput;
 import io.atomix.catalyst.serializer.Serializer;
-import util.RemoteObj;
+import pt.um.bookstore.util.RemoteObj;
 
 /**
  * Remote object request to a naming service.
@@ -23,6 +23,16 @@ public class GetRemoteObjRequest extends ObjRequest
         super(ro);
         this.name = name;
         this.tag = -1;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public long getTag()
+    {
+        return tag;
     }
 
     @Override
